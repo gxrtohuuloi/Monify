@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+    <title>Monify</title>
+    
+    <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="100" y2="100"><stop stop-color="%233b82f6"/><stop offset="1" stop-color="%2306b6d4"/></linearGradient></defs><rect x="10" y="25" width="80" height="50" rx="12" fill="url(%23g)" shadow="0 10 20 rgba(0,0,0,0.2)"/><path d="M10 38h80v2H10z" fill="rgba(255,255,255,0.2)"/><circle cx="70" cy="50" r="8" fill="white"/><circle cx="70" cy="50" r="4" fill="%233b82f6" opacity="0.5"/></svg>'>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "3xl": "1.5rem", "full": "9999px"},
+                    animation: {
+                        'blob': 'blob 10s infinite',
+                        'fade-in-up': 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(50px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-30px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .liquid-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background: linear-gradient(135deg, #f0f4ff 0%, #eef2f5 100%); overflow: hidden; }
+        .dark .liquid-bg { background: linear-gradient(135deg, #0f172a 0%, #020617 100%); }
+        .blob-cont { position: absolute; top: 0; left: 0; width: 100%; height: 100%; filter: blur(80px); opacity: 0.8; z-index: -1; pointer-events: none; }
+        .blob { position: absolute; border-radius: 50%; animation: blob 15s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass-panel { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02), inset 0 0 20px rgba(255, 255, 255, 0.5); }
+        .dark .glass-panel { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4); backdrop-filter: blur(24px) saturate(150%); -webkit-backdrop-filter: blur(24px) saturate(150%); }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.3); border-radius: 20px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.6); }
+    </style>
+</head>
+<body class="text-[#0d141b] dark:text-white flex flex-col font-display antialiased selection:bg-primary/20 min-h-screen relative">
+    <div class="liquid-bg">
+        <div class="blob-cont">
+            <div class="blob bg-blue-200/80 dark:bg-blue-900/40 w-[500px] h-[500px] top-0 -left-20 mix-blend-multiply dark:mix-blend-screen opacity-100"></div>
+            <div class="blob bg-purple-200/80 dark:bg-purple-900/40 w-[500px] h-[500px] top-0 -right-20 animation-delay-2000 mix-blend-multiply dark:mix-blend-screen opacity-100" style="animation-delay: 2s"></div>
+            <div class="blob bg-pink-200/80 dark:bg-pink-900/40 w-[500px] h-[500px] -bottom-32 left-1/2 transform -translate-x-1/2 animation-delay-4000 mix-blend-multiply dark:mix-blend-screen opacity-100" style="animation-delay: 4s"></div>
+        </div>
+    </div>
+    
+    <div id="root" class="relative z-10 flex flex-col h-full"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, where, orderBy } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAmnmGjB_lb-xgZ6wSH5i7Y0QLOiUBXRxo",
+            authDomain: "gxrtohuuloi-logistics.firebaseapp.com",
+            projectId: "gxrtohuuloi-logistics",
+            storageBucket: "gxrtohuuloi-logistics.firebasestorage.app",
+            messagingSenderId: "894421141098",
+            appId: "1:894421141098:web:f6e594de9c01b3ce95ac13"
+        };
+
+        // Khởi tạo và đưa ra Window để React dùng
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        window.db = db;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.deleteDoc = deleteDoc;
+        window.doc = doc;
+        window.onSnapshot = onSnapshot;
+        window.query = query;
+        window.where = where;
+        window.orderBy = orderBy;
+    </script>
+
+    <script type="text/babel" data-presets="typescript,react">
+        const { useState, useEffect, useRef, useMemo } = React;
+
+        interface Category { id: string; name: string; icon: string; type: 'Expense' | 'Income'; color: string; limit: number; }
+        interface Transaction { id: string; title: string; category: string; categoryId?: string; amount: number; date: string; time: string; type: 'Expense' | 'Income'; method: string; userId?: string; }
+        type SyncStatus = 'idle' | 'loading' | 'error';
+
+        const DEFAULT_CATEGORIES: Category[] = [
+            { id: '1', name: 'Tiền Nhà', icon: 'cottage', type: 'Expense', color: 'indigo', limit: 1500000 },
+            { id: '2', name: 'Tiền Ăn', icon: 'restaurant', type: 'Expense', color: 'orange', limit: 2250000 },
+            { id: '3', name: 'Gym', icon: 'fitness_center', type: 'Expense', color: 'rose', limit: 249000 },
+            { id: '4', name: 'Di Chuyển', icon: 'directions_car', type: 'Expense', color: 'emerald', limit: 300000 },
+            { id: '5', name: 'Shopping', icon: 'shopping_bag', type: 'Expense', color: 'purple', limit: 401000 },
+            { id: '6', name: 'Dự Phòng', icon: 'shield', type: 'Expense', color: 'slate', limit: 200000 },
+            { id: '7', name: 'Tiết Kiệm', icon: 'savings', type: 'Expense', color: 'teal', limit: 100000 },
+            { id: '8', name: 'Thu Nhập', icon: 'paid', type: 'Income', color: 'blue', limit: 0 },
+        ];
+
+        const AVAILABLE_COLORS = ['orange', 'blue', 'emerald', 'indigo', 'rose', 'purple', 'teal', 'slate', 'cyan', 'amber', 'red'];
+        const AVAILABLE_ICONS = ['restaurant', 'cottage', 'fitness_center', 'directions_car', 'shopping_bag', 'shield', 'savings', 'paid', 'school', 'medical_services', 'pets', 'flight', 'local_cafe', 'movie', 'sports_esports', 'work', 'card_giftcard', 'checkroom', 'local_gas_station'];
+
+        const getColorClasses = (color: string) => {
+            const map: Record<string, any> = {
+                orange: { bg: 'bg-orange-100/80 dark:bg-orange-900/40', text: 'text-orange-600 dark:text-orange-400', gradient: 'from-orange-400 to-orange-500', shadow: 'shadow-orange-500/30', border: 'border-orange-200' },
+                blue: { bg: 'bg-blue-100/80 dark:bg-blue-900/40', text: 'text-blue-600 dark:text-blue-400', gradient: 'from-blue-400 to-blue-500', shadow: 'shadow-blue-500/30', border: 'border-blue-200' },
+                emerald: { bg: 'bg-emerald-100/80 dark:bg-emerald-900/40', text: 'text-emerald-600 dark:text-emerald-400', gradient: 'from-emerald-400 to-emerald-500', shadow: 'shadow-emerald-500/30', border: 'border-emerald-200' },
+                indigo: { bg: 'bg-indigo-100/80 dark:bg-indigo-900/40', text: 'text-indigo-600 dark:text-indigo-400', gradient: 'from-indigo-400 to-indigo-500', shadow: 'shadow-indigo-500/30', border: 'border-indigo-200' },
+                rose: { bg: 'bg-rose-100/80 dark:bg-rose-900/40', text: 'text-rose-600 dark:text-rose-400', gradient: 'from-rose-400 to-rose-500', shadow: 'shadow-rose-500/30', border: 'border-rose-200' },
+                purple: { bg: 'bg-purple-100/80 dark:bg-purple-900/40', text: 'text-purple-600 dark:text-purple-400', gradient: 'from-purple-400 to-purple-500', shadow: 'shadow-purple-500/30', border: 'border-purple-200' },
+                slate: { bg: 'bg-slate-200/80 dark:bg-slate-700/40', text: 'text-slate-600 dark:text-slate-400', gradient: 'from-slate-400 to-slate-500', shadow: 'shadow-slate-500/30', border: 'border-slate-200' },
+                teal: { bg: 'bg-teal-100/80 dark:bg-teal-900/40', text: 'text-teal-600 dark:text-teal-400', gradient: 'from-teal-400 to-teal-500', shadow: 'shadow-teal-500/30', border: 'border-teal-200' },
+                cyan: { bg: 'bg-cyan-100/80 dark:bg-cyan-900/40', text: 'text-cyan-600 dark:text-cyan-400', gradient: 'from-cyan-400 to-cyan-500', shadow: 'shadow-cyan-500/30', border: 'border-cyan-200' },
+                amber: { bg: 'bg-amber-100/80 dark:bg-amber-900/40', text: 'text-amber-600 dark:text-amber-400', gradient: 'from-amber-400 to-amber-500', shadow: 'shadow-amber-500/30', border: 'border-amber-200' },
+                red: { bg: 'bg-red-100/80 dark:bg-red-900/40', text: 'text-red-600 dark:text-red-400', gradient: 'from-red-400 to-red-500', shadow: 'shadow-red-500/30', border: 'border-red-200' },
+            };
+            return map[color] || map['slate'];
+        };
+
+        const formatUserId = (phone) => {
+            if (!phone) return '';
+            return String(phone).replace(/\D/g, '').replace(/^0+/, '').trim();
+        };
+
+        const normalizeDate = (dateInput) => {
+            if (!dateInput) return new Date().toISOString().split('T')[0];
+            try {
+                const str = String(dateInput);
+                if (str.match(/^\d{4}-\d{2}-\d{2}/)) return str.match(/^\d{4}-\d{2}-\d{2}/)[0];
+                const d = new Date(dateInput);
+                if (!isNaN(d.getTime())) {
+                    const year = d.getFullYear();
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    return `${year}-${month}-${day}`;
+                }
+            } catch (e) { }
+            return new Date().toISOString().split('T')[0];
+        };
+
+        const formatDateValue = (d) => {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+        
+        const getDayOfWeek = (d) => ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'][d.getDay()];
+
+        // 5. COMPONENTS (GIỮ NGUYÊN)
+        const DateScrollerPopup = ({ selectedDate, onSelect }) => {
+            const dateListRef = useRef(null);
+            const dateList = useMemo(() => {
+                const centerDate = new Date(selectedDate);
+                const days = [];
+                for (let i = -30; i <= 30; i++) {
+                    const d = new Date(centerDate);
+                    d.setDate(centerDate.getDate() + i);
+                    days.push(d);
+                }
+                return days;
+            }, [selectedDate]);
+
+            useEffect(() => {
+                if (dateListRef.current) {
+                    setTimeout(() => {
+                        const selectedBtn = dateListRef.current?.querySelector('[data-selected="true"]');
+                        if (selectedBtn) {
+                            selectedBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                        }
+                    }, 100);
+                }
+            }, [selectedDate]);
+
+            return (
+                <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-[2rem] p-4 shadow-2xl shadow-blue-500/20 border border-white/40 animate-fade-in-up origin-center">
+                    <div className="text-center mb-3">
+                        <span className="text-xs font-extrabold text-gray-500/80 dark:text-gray-400 uppercase tracking-[0.2em] drop-shadow-sm">
+                            Tháng {new Date(selectedDate).getMonth() + 1}, {new Date(selectedDate).getFullYear()}
+                        </span>
+                    </div>
+                    <div className="relative w-full">
+                        <div ref={dateListRef} className="flex items-center gap-3 overflow-x-auto hide-scrollbar py-2 snap-x snap-mandatory px-[calc(50%-2.5rem)]">
+                            {dateList.map((dItem) => {
+                                const dStr = formatDateValue(dItem);
+                                const isSelected = selectedDate === dStr;
+                                return (
+                                    <button key={dStr} data-selected={isSelected} onClick={(e) => { e.stopPropagation(); onSelect(dStr); }} className={`flex-shrink-0 snap-center flex flex-col items-center justify-center transition-all duration-500 ease-out rounded-2xl ${isSelected ? 'size-[4rem] bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/40 scale-110 z-10 ring-4 ring-white/30 dark:ring-black/10' : 'size-14 text-gray-400 hover:text-gray-600 dark:text-gray-500 scale-95 opacity-60 hover:opacity-100 hover:bg-white/20'}`}>
+                                        <span className={`text-[10px] font-bold uppercase mb-0.5 ${isSelected ? 'opacity-90' : ''}`}>{getDayOfWeek(dItem)}</span>
+                                        <span className={`text-xl font-black tracking-tight`}>{dItem.getDate()}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white/20 to-transparent dark:from-black/20 pointer-events-none"></div>
+                        <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white/20 to-transparent dark:from-black/20 pointer-events-none"></div>
+                    </div>
+                </div>
+            );
+        };
+
+        const Header = ({ phoneNumber, setPhoneNumber, syncStatus }) => {
+            const [inputWidth, setInputWidth] = useState(100);
+            const spanRef = useRef(null);
+            const statusConfig = {
+                idle: { color: 'bg-emerald-500', text: 'Đã lưu', ring: 'ring-emerald-500/30' },
+                loading: { color: 'bg-amber-400', text: 'Đang lưu...', ring: 'ring-amber-400/30' },
+                error: { color: 'bg-red-500', text: 'Lỗi / SĐT', ring: 'ring-red-500/30' }
+            };
+            const currentStatus = statusConfig[syncStatus] || statusConfig.error;
+
+            useEffect(() => {
+                if (spanRef.current) {
+                    const textWidth = spanRef.current.offsetWidth;
+                    setInputWidth(Math.max(80, textWidth + 16));
+                }
+            }, [phoneNumber]);
+
+            return (
+                <header className="sticky top-0 z-50 px-3 md:px-4 py-3 mx-auto w-full max-w-[1280px]">
+                    <div className="flex items-center justify-between w-full">
+                        <div className="flex-shrink-0">
+                            <div className="glass-panel rounded-full p-1.5 pr-5 flex items-center gap-3 shadow-lg border-white/40 transform transition-transform hover:scale-105">
+                                <div className="size-10 md:size-11 rounded-full bg-gradient-to-br from-primary to-cyan-400 flex items-center justify-center text-white shadow-lg shadow-primary/30 relative overflow-hidden shrink-0">
+                                    <span className="material-symbols-outlined text-[24px]">cloud</span>
+                                </div>
+                                <span className="text-xl md:text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-800 dark:from-white dark:to-blue-200 block">
+                                    Monify
+                                </span>
+                            </div>
+                        </div>
+                        <div className="flex-shrink-0 ml-auto pl-2">
+                            <div className="glass-panel flex items-center gap-2 rounded-full p-1.5 pl-2 shadow-lg border-white/40 transition-all duration-300 ease-out hover:shadow-xl">
+                                <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-full bg-white/60 dark:bg-black/20 shadow-sm border border-black/5 shrink-0">
+                                    <div className={`size-2.5 rounded-full ${currentStatus.color} ${syncStatus === 'loading' ? 'animate-pulse' : ''} shadow-sm`}></div>
+                                    <span className="text-[10px] font-bold text-gray-500 uppercase hidden md:block">{currentStatus.text}</span>
+                                </div>
+                                <div className="relative h-9 md:h-10 flex items-center bg-white/50 dark:bg-black/20 rounded-full px-1 transition-colors focus-within:bg-white focus-within:shadow-sm">
+                                    <span ref={spanRef} className="absolute opacity-0 pointer-events-none whitespace-pre text-sm font-bold font-display px-2" aria-hidden="true">{phoneNumber || "Nhập SĐT"}</span>
+                                    <input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="Nhập SĐT" style={{ width: `${inputWidth}px` }} className="bg-transparent border-none p-0 px-2 text-sm font-bold font-display text-gray-700 dark:text-white placeholder:text-gray-400 placeholder:font-normal focus:ring-0 text-center transition-all duration-300 ease-out"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+            );
+        };
+
+        const TransactionForm = ({ onAdd, selectedDate, setSelectedDate, categories, setCategories }) => {
+            const [type, setType] = useState('Chi');
+            const [amount, setAmount] = useState('');
+            const [isFocused, setIsFocused] = useState(false);
+            const [currentCategory, setCurrentCategory] = useState('');
+            const [isManageModalOpen, setIsManageModalOpen] = useState(false);
+            const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+            const [newCatName, setNewCatName] = useState('');
+            const [newCatIcon, setNewCatIcon] = useState('paid');
+            const [newCatLimit, setNewCatLimit] = useState('');
+            const [editingId, setEditingId] = useState(null);
+            const [editingColor, setEditingColor] = useState('blue'); 
+            const inputRef = useRef(null);
+
+            useEffect(() => {
+                const cats = categories.filter(c => c.type === (type === 'Thu' ? 'Income' : 'Expense'));
+                const isCurrentValid = cats.some(c => c.id === currentCategory);
+                if (!isCurrentValid && cats.length > 0) {
+                    const foodCategory = cats.find(c => c.name.toLowerCase() === 'tiền ăn');
+                    if (foodCategory) {
+                        setCurrentCategory(foodCategory.id);
+                    } else {
+                        setCurrentCategory(cats[0].id);
+                    }
+                }
+            }, [type, categories, currentCategory]);
+
+            const handleSubmit = () => {
+                if (!amount) return;
+                const numAmount = parseFloat(amount);
+                if (isNaN(numAmount) || numAmount <= 0) return;
+                const categoryObj = categories.find(c => c.id === currentCategory);
+                const newTransaction = {
+                    title: categoryObj?.name || 'Giao dịch mới',
+                    category: categoryObj?.name || 'Khác',
+                    categoryId: categoryObj?.id,
+                    amount: numAmount,
+                    date: selectedDate, // Assumes YYYY-MM-DD
+                    time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+                    type: type === 'Thu' ? 'Income' : 'Expense',
+                    method: 'Tiền mặt'
+                };
+                onAdd(newTransaction);
+                setAmount('');
+            };
+
+            const handleAmountChange = (e) => {
+                const val = e.target.value;
+                const cleanVal = val.replace(/[^0-9]/g, '');
+                if (cleanVal.length > 15) return;
+                setAmount(cleanVal);
+            };
+
+            const handleKeyDown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSubmit();
+                    inputRef.current?.blur();
+                }
+            };
+
+            const getAutoColor = () => {
+                const usedColors = categories.map(c => c.color);
+                const available = AVAILABLE_COLORS.filter(c => !usedColors.includes(c));
+                return available.length > 0 ? available[Math.floor(Math.random() * available.length)] : AVAILABLE_COLORS[Math.floor(Math.random() * AVAILABLE_COLORS.length)];
+            };
+
+            const handleSaveCategory = () => {
+                if (!newCatName) return;
+                if (editingId) {
+                    setCategories(prev => prev.map(c => c.id === editingId ? {
+                        ...c, name: newCatName, icon: newCatIcon, color: editingColor, limit: newCatLimit ? parseInt(newCatLimit) : 0
+                    } : c));
+                } else {
+                    const autoColor = getAutoColor();
+                    const newCat = {
+                        id: Date.now().toString(), name: newCatName, icon: newCatIcon, color: autoColor, type: type === 'Thu' ? 'Income' : 'Expense', limit: newCatLimit ? parseInt(newCatLimit) : 0
+                    };
+                    setCategories(prev => [...prev, newCat]);
+                    setCurrentCategory(newCat.id);
+                }
+                resetForm();
+            };
+
+            const handleDeleteCategory = (id) => {
+                if (confirm('Bạn có chắc muốn xóa danh mục này?')) {
+                    setCategories(prev => prev.filter(c => c.id !== id));
+                }
+            };
+
+            const handleEditCategory = (cat) => {
+                setNewCatName(cat.name); setNewCatIcon(cat.icon); setNewCatLimit(cat.limit ? cat.limit.toString() : ''); setEditingColor(cat.color); setEditingId(cat.id);
+            };
+
+            const resetForm = () => {
+                setNewCatName(''); setNewCatIcon('paid'); setNewCatLimit(''); setEditingId(null); setEditingColor('blue');
+            };
+
+            const displayValue = amount ? parseInt(amount).toLocaleString('vi-VN') : '';
+            const filteredCategories = categories.filter(c => c.type === (type === 'Thu' ? 'Income' : 'Expense'));
+
+            return (
+                <div className="glass-panel rounded-[2.5rem] p-6 md:p-8 flex flex-col gap-6 md:gap-8 transition-all duration-500 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] relative z-20">
+                    <div className="flex items-center justify-between">
+                        <h1 className="text-xl md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Nhập giao dịch</h1>
+                    </div>
+                    <div className="flex w-full">
+                        <div className="flex h-12 md:h-14 w-full items-center justify-center rounded-[1.5rem] bg-gray-100/50 dark:bg-black/20 p-1.5 border border-white/20 shadow-inner">
+                        <label className={`flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-[1.2rem] px-2 text-sm font-bold transition-all duration-300 ${type === 'Thu' ? 'bg-white shadow-lg shadow-gray-200/50 text-primary scale-100' : 'text-gray-500 hover:bg-white/30 scale-95'}`}>
+                            <span className="truncate">Thu Nhập</span>
+                            <input className="invisible w-0 absolute" name="transaction_type" type="radio" checked={type === 'Thu'} onChange={() => setType('Thu')} />
+                        </label>
+                        <label className={`flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-[1.2rem] px-2 text-sm font-bold transition-all duration-300 ${type === 'Chi' ? 'bg-white shadow-lg shadow-gray-200/50 text-rose-500 scale-100' : 'text-gray-500 hover:bg-white/30 scale-95'}`}>
+                            <span className="truncate">Chi Tiêu</span>
+                            <input className="invisible w-0 absolute" name="transaction_type" type="radio" checked={type === 'Chi'} onChange={() => setType('Chi')} />
+                        </label>
+                        </div>
+                    </div>
+                    <div className="relative group px-2">
+                        <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 mb-2 uppercase tracking-wider">Số tiền</label>
+                        <div className="relative h-20 md:h-24 w-full cursor-text" onClick={() => inputRef.current?.focus()}>
+                            <div className="absolute inset-0 flex items-center border-b-2 border-gray-200 dark:border-gray-700 pointer-events-none z-0">
+                            <span className={`text-5xl md:text-6xl font-bold transition-colors select-none ${amount ? 'text-gray-900 dark:text-white' : 'text-gray-200 dark:text-gray-800'}`}>
+                                {amount ? displayValue : '0'}
+                            </span>
+                            {isFocused && <span className="w-1 h-10 md:h-12 bg-primary ml-1 animate-pulse rounded-full"></span>}
+                            </div>
+                            <input ref={inputRef} className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-text" type="tel" inputMode="numeric" pattern="[0-9]*" autoComplete="off" value={amount} onChange={handleAmountChange} onKeyDown={handleKeyDown} onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)} />
+                            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2 z-20">
+                                {amount && (
+                                    <button onClick={(e) => { e.stopPropagation(); setAmount(''); inputRef.current?.focus(); }} className="size-8 rounded-full bg-gray-200/50 dark:bg-gray-700/50 flex items-center justify-center text-gray-500 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                                        <span className="material-symbols-outlined text-sm">close</span>
+                                    </button>
+                                )}
+                                <span className="text-lg md:text-xl font-medium text-gray-400 dark:text-gray-500">VND</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                        <div className="flex justify-between items-center mb-4 ml-1">
+                            <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Danh mục</label>
+                            <button onClick={() => { resetForm(); setIsManageModalOpen(true); }} className="text-xs font-bold text-primary hover:text-blue-700 flex items-center gap-1 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-lg transition-colors">
+                                <span className="material-symbols-outlined text-[14px]">settings</span>Tùy chỉnh
+                            </button>
+                        </div>
+                        <div className="flex flex-wrap gap-3">
+                        {filteredCategories.map((cat) => {
+                            const colors = getColorClasses(cat.color);
+                            return (
+                                <button key={cat.id} onClick={() => setCurrentCategory(cat.id)} className={`flex items-center gap-2 px-4 py-3 rounded-2xl transition-all duration-300 border ${currentCategory === cat.id ? `bg-white text-gray-900 shadow-lg ${colors.shadow} border-transparent scale-105 ring-2 ring-${cat.color}-500/50` : 'bg-white/60 dark:bg-black/20 text-gray-600 dark:text-gray-300 border-white/40 hover:bg-white hover:scale-105'}`} style={currentCategory === cat.id ? { background: `linear-gradient(to right, white, white)`, color: 'black' } : {}}>
+                                <span className={`material-symbols-outlined text-[20px] ${currentCategory === cat.id ? `text-${cat.color}-500` : ''}`}>{cat.icon}</span>
+                                <span className="text-sm font-medium font-body capitalize">{cat.name}</span>
+                                </button>
+                            )
+                        })}
+                        </div>
+                    </div>
+                    <div className="mt-6 animate-fade-in-up relative" style={{ animationDelay: '0.2s' }}>
+                        {isDatePickerOpen && (
+                            <>
+                                <div className="fixed inset-0 z-30" onClick={() => setIsDatePickerOpen(false)}></div>
+                                <div className="absolute bottom-full left-0 w-full mb-3 z-40">
+                                    <DateScrollerPopup selectedDate={selectedDate} onSelect={(d) => setSelectedDate(d)} />
+                                </div>
+                            </>
+                        )}
+                        <button onClick={() => setIsDatePickerOpen(!isDatePickerOpen)} className={`w-full mt-4 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-[2.5rem] p-2 pr-6 flex items-center gap-4 border border-white/20 shadow-sm hover:shadow-md transition-all cursor-pointer select-none group ${isDatePickerOpen ? 'ring-2 ring-blue-400/50 bg-white/60' : ''}`}>
+                            <div className="size-14 rounded-full bg-white/80 dark:bg-white/10 shadow-sm flex items-center justify-center text-blue-500 backdrop-blur-sm">
+                                <span className="material-symbols-outlined text-[26px]">calendar_today</span>
+                            </div>
+                            <div className="text-left flex-1">
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Ngày giao dịch</p>
+                                <p className="text-xl font-black text-gray-800 dark:text-white tracking-tight group-hover:text-primary transition-colors">{new Date(selectedDate).toLocaleDateString('vi-VN')}</p>
+                            </div>
+                        </button>
+                    </div>
+                    <div className="pt-4 mt-auto animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+                        <button onClick={handleSubmit} className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-primary text-white font-bold py-4 px-6 rounded-2xl shadow-xl shadow-primary/30 transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2">
+                        <span className="material-symbols-outlined">check_circle</span>Lưu Giao Dịch
+                        </button>
+                    </div>
+                    {isManageModalOpen && (
+                        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in-up">
+                            <div className="glass-panel w-full max-w-lg rounded-[2rem] p-6 bg-white dark:bg-slate-900 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-xl font-bold">Quản lý danh mục</h2>
+                                    <button onClick={() => setIsManageModalOpen(false)} className="size-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200"><span className="material-symbols-outlined text-gray-600">close</span></button>
+                                </div>
+                                <div className="bg-gray-50/50 dark:bg-white/5 p-4 rounded-2xl mb-6 border border-gray-100 dark:border-white/10">
+                                    <div className="grid grid-cols-2 gap-4 mb-4">
+                                        <div className="col-span-2">
+                                                <label className="text-xs font-medium text-gray-400 block mb-1">Tên danh mục</label>
+                                                <input type="text" value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder="Ví dụ: Du lịch" className="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-black/20 text-sm font-bold font-body p-3 capitalize" />
+                                        </div>
+                                        <div>
+                                                <label className="text-xs font-medium text-gray-400 block mb-1">Ngân sách</label>
+                                                <input type="number" value={newCatLimit} onChange={(e) => setNewCatLimit(e.target.value)} placeholder="0" disabled={type === 'Thu'} className="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-black/20 text-sm font-bold p-3 disabled:opacity-50" />
+                                        </div>
+                                        <div className="col-span-2">
+                                                <label className="text-xs font-medium text-gray-400 block mb-1">Biểu tượng</label>
+                                                <div className="flex flex-wrap gap-2 h-24 overflow-y-auto custom-scrollbar p-1">
+                                                    {AVAILABLE_ICONS.map(ic => (
+                                                        <button key={ic} onClick={() => setNewCatIcon(ic)} className={`size-9 rounded-xl flex items-center justify-center transition-all ${newCatIcon === ic ? 'bg-primary text-white shadow-lg' : 'bg-white border border-gray-100 hover:bg-gray-50'}`}><span className="material-symbols-outlined text-[20px]">{ic}</span></button>
+                                                    ))}
+                                                </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button onClick={handleSaveCategory} className="flex-1 bg-primary text-white font-bold py-3 rounded-xl hover:bg-blue-600 transition-colors">{editingId ? 'Cập nhật' : 'Thêm mới'}</button>
+                                        {editingId && <button onClick={resetForm} className="px-4 bg-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-300">Hủy</button>}
+                                    </div>
+                                </div>
+                                <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                                    {filteredCategories.map(cat => (
+                                        <div key={cat.id} className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 group">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`size-10 rounded-lg flex items-center justify-center ${getColorClasses(cat.color).bg} ${getColorClasses(cat.color).text}`}><span className="material-symbols-outlined">{cat.icon}</span></div>
+                                                <div><p className="text-sm font-bold font-body capitalize">{cat.name}</p></div>
+                                            </div>
+                                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button onClick={() => handleEditCategory(cat)} className="size-8 rounded-full hover:bg-gray-100 text-blue-500 flex items-center justify-center"><span className="material-symbols-outlined text-[18px]">edit</span></button>
+                                                <button onClick={() => handleDeleteCategory(cat.id)} className="size-8 rounded-full hover:bg-red-50 text-red-500 flex items-center justify-center"><span className="material-symbols-outlined text-[18px]">delete</span></button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const BudgetOverview = ({ transactions, categories }) => {
+            const budgets = categories
+                .filter(c => c.type === 'Expense')
+                .map(category => {
+                const totalSpent = transactions
+                    .filter(t => (t.categoryId === category.id || t.category.toLowerCase() === category.name.toLowerCase()) && t.type === 'Expense')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                return { ...category, spent: totalSpent, limit: category.limit || 0 };
+                });
+            const formatCurrency = (val) => val.toLocaleString('vi-VN');
+            return (
+                <div className="glass-panel rounded-[2.5rem] p-6 md:p-8 border-white/20 transition-all duration-300 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)]">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Ngân sách dự kiến</h3>
+                        <span className="text-xs text-gray-400 font-medium">Đồng bộ với danh mục</span>
+                    </div>
+                    {budgets.length === 0 ? (
+                        <p className="text-sm text-gray-500 text-center py-4">Chưa có danh mục chi tiêu nào.</p>
+                    ) : (
+                        <div className="space-y-6">
+                            {budgets.map((budget) => {
+                            const limit = budget.limit > 0 ? budget.limit : 1;
+                            const percentage = Math.min((budget.spent / limit) * 100, 100);
+                            const colors = getColorClasses(budget.color);
+                            const isOverBudget = budget.spent > limit && budget.limit > 0;
+                            return (
+                                <div key={budget.id} className="group">
+                                <div className="flex justify-between items-end mb-2">
+                                    <div className="flex items-center gap-4">
+                                    <div className={`p-3 rounded-2xl ${colors.bg} ${colors.text} backdrop-blur-sm transition-all duration-300 group-hover:scale-110 shadow-sm`}><span className="material-symbols-outlined text-[20px]">{budget.icon}</span></div>
+                                    <span className="text-sm font-bold text-gray-800 dark:text-white capitalize">{budget.name}</span>
+                                    </div>
+                                    <div className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                                    <span className={`${isOverBudget ? 'text-red-500' : 'text-gray-900 dark:text-white'} font-bold text-sm`}>{formatCurrency(budget.spent)}</span>
+                                    {budget.limit > 0 && (<><span className="opacity-50 mx-1.5 font-light">/</span>{formatCurrency(budget.limit)}</>)}
+                                    </div>
+                                </div>
+                                <div className="w-full bg-gray-100 dark:bg-gray-700/50 rounded-full h-3 overflow-hidden border border-white/30 shadow-inner">
+                                    <div className={`h-3 rounded-full shadow-lg ${colors.shadow} transition-all duration-1000 ease-out bg-gradient-to-r ${colors.gradient} ${isOverBudget ? 'bg-red-500 to-red-600' : ''}`} style={{ width: budget.limit > 0 ? `${percentage}%` : '0%' }}></div>
+                                </div>
+                                </div>
+                            );
+                            })}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const MonthlySummary = ({ transactions }) => {
+            const totalIncome = transactions.filter(t => t.type === 'Income').reduce((sum, t) => sum + t.amount, 0);
+            const totalExpense = transactions.filter(t => t.type === 'Expense').reduce((sum, t) => sum + t.amount, 0);
+            const formatLargeNumber = (num) => {
+                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+                if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
+                return num.toString();
+            };
+            const total = totalIncome + totalExpense;
+            const incomePct = total > 0 ? (totalIncome / total) * 100 : 0;
+            const expensePct = total > 0 ? (totalExpense / total) * 100 : 0;
+            return (
+                <div className="glass-panel rounded-[2.5rem] p-6 md:p-8 border-white/20 transition-all duration-300 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)]">
+                    <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-6 ml-1">Tổng quan tháng</h3>
+                    <div className="flex gap-6 items-end justify-between mb-8">
+                        <div className="flex-1 p-4 rounded-3xl bg-blue-50/60 dark:bg-blue-900/10 hover:bg-blue-50 transition-all cursor-default border border-blue-100/50">
+                        <div className="flex items-center gap-2 mb-2"><span className="size-2.5 rounded-full bg-primary shadow-[0_0_10px_rgba(19,127,236,0.6)]"></span><p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Tổng thu</p></div>
+                        <p className="text-xl md:text-2xl font-extrabold text-primary">{formatLargeNumber(totalIncome)}</p>
+                        </div>
+                        <div className="flex-1 text-right p-4 rounded-3xl bg-rose-50/60 dark:bg-rose-900/10 hover:bg-rose-50 transition-all cursor-default border border-rose-100/50">
+                        <div className="flex items-center gap-2 justify-end mb-2"><p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Tổng chi</p><span className="size-2.5 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.6)]"></span></div>
+                        <p className="text-xl md:text-2xl font-extrabold text-rose-500">{formatLargeNumber(totalExpense)}</p>
+                        </div>
+                    </div>
+                    <div className="relative h-6 w-full bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden flex border border-white/50 shadow-inner p-1">
+                        <div className="h-full rounded-l-full bg-gradient-to-r from-blue-400 to-primary shadow-[0_0_15px_rgba(19,127,236,0.4)] transition-all duration-1000 ease-out" style={{ width: `${incomePct}%` }}></div>
+                        <div className="h-full rounded-r-full bg-gradient-to-r from-rose-400 to-rose-600 shadow-[0_0_15px_rgba(244,63,94,0.4)] transition-all duration-1000 ease-out" style={{ width: `${expensePct}%` }}></div>
+                    </div>
+                    <div className="flex justify-between text-[11px] text-gray-400 mt-3 font-bold px-2 uppercase tracking-wide">
+                        <span>{incomePct > 0 ? `${incomePct.toFixed(0)}%` : '0%'}</span><span>{expensePct > 0 ? `${expensePct.toFixed(0)}%` : '0%'}</span>
+                    </div>
+                </div>
+            );
+        };
+
+        const TransactionItem = ({ transaction, categoryInfo, onDelete }) => {
+            const isIncome = transaction.type === 'Income';
+            let bgIcon = 'bg-gray-100/80 dark:bg-gray-800', textIcon = 'text-gray-600', iconName = 'receipt_long';
+            if (categoryInfo) { const colors = getColorClasses(categoryInfo.color); bgIcon = colors.bg; textIcon = colors.text; iconName = categoryInfo.icon; }
+            else if (isIncome) { bgIcon = 'bg-blue-100/80 dark:bg-blue-900/30'; textIcon = 'text-primary'; iconName = 'paid'; }
+            return (
+                <div className="px-6 py-4 flex items-center gap-5 hover:bg-white/40 dark:hover:bg-white/5 transition-all duration-300 cursor-pointer group/item animate-fade-in-up border-b border-gray-100/50 last:border-0 hover:pl-8">
+                    <div className={`size-12 rounded-2xl ${bgIcon} ${textIcon} flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-110 group-hover:rotate-3`}>
+                        <span className="material-symbols-outlined text-[22px]">{iconName}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{transaction.title}</p>
+                        <p className="text-xs text-gray-500 truncate mt-1 font-medium capitalize">{transaction.category} • {transaction.time}</p>
+                    </div>
+                    <div className="text-right flex flex-col items-end gap-1">
+                        <p className={`text-base font-bold ${isIncome ? 'text-primary' : 'text-gray-900 dark:text-white'}`}>{isIncome ? '+' : '-'} {transaction.amount.toLocaleString('vi-VN')}</p>
+                        <button onClick={(e) => { e.stopPropagation(); if(confirm('Bạn có chắc muốn xóa giao dịch này?')) onDelete(transaction.id); }} className="opacity-0 group-hover/item:opacity-100 transition-opacity text-gray-400 hover:text-red-500 p-1 -mr-2" title="Xóa giao dịch"><span className="material-symbols-outlined text-[18px]">delete</span></button>
+                    </div>
+                </div>
+            );
+        };
+
+        const TransactionHistory = ({ transactions, selectedDate, setSelectedDate, categories, onDelete }) => {
+            const [isHeaderDateOpen, setIsHeaderDateOpen] = useState(false);
+            const filteredTransactions = transactions.filter(t => normalizeDate(t.date) === normalizeDate(selectedDate));
+            const displayDate = new Date(selectedDate).toLocaleDateString('vi-VN', { year: 'numeric', month: 'numeric', day: 'numeric' });
+
+            return (
+                <div className="glass-panel rounded-[2.5rem] flex-1 flex flex-col overflow-hidden transition-all duration-300 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] min-h-[300px]">
+                    <div className="p-5 px-6 flex justify-between items-center backdrop-blur-xl sticky top-0 z-10 bg-white/20 border-b border-transparent">
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Lịch sử giao dịch</h3>
+                        <div className="relative">
+                            <button onClick={() => setIsHeaderDateOpen(!isHeaderDateOpen)} className="text-sm font-bold text-gray-800 dark:text-white bg-transparent hover:bg-white/30 dark:hover:bg-white/10 px-3 py-1.5 rounded-xl transition-all flex items-center gap-2">
+                                {displayDate}
+                            </button>
+                            {isHeaderDateOpen && (
+                                <>
+                                    <div className="fixed inset-0 z-40" onClick={() => setIsHeaderDateOpen(false)}></div>
+                                    <div className="absolute top-full right-0 mt-2 z-50 w-[320px]">
+                                        <DateScrollerPopup selectedDate={selectedDate} onSelect={(d) => { setSelectedDate(d); }} />
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-0 scroll-smooth custom-scrollbar">
+                        {filteredTransactions.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-full text-gray-400 p-8 text-center animate-fade-in-up">
+                            <div className="size-20 rounded-full bg-gray-100/50 flex items-center justify-center mb-4 shadow-inner"><span className="material-symbols-outlined text-4xl opacity-30">event_note</span></div>
+                            <p className="font-medium">Chưa có giao dịch</p><p className="text-xs mt-1 opacity-60">trong ngày này</p>
+                        </div>
+                        ) : (
+                        <div className="divide-y divide-gray-50/0">
+                            {filteredTransactions.map((t) => {
+                                const cat = categories.find(c => c.id === t.categoryId) || categories.find(c => c.name.toLowerCase() === t.category.toLowerCase());
+                                return <TransactionItem key={t.id} transaction={t} categoryInfo={cat} onDelete={onDelete} />;
+                            })}
+                        </div>
+                        )}
+                    </div>
+                    <div className="p-5 border-t border-gray-200/30 bg-white/20 text-center backdrop-blur-md">
+                        <div className="grid grid-cols-2 gap-4 text-xs font-bold uppercase tracking-wide">
+                            <div className="text-primary py-1 px-3 rounded-xl bg-blue-50/50">Thu: {filteredTransactions.filter(t=>t.type==='Income').reduce((s,t)=>s+t.amount,0).toLocaleString('vi-VN')}</div>
+                            <div className="text-rose-500 py-1 px-3 rounded-xl bg-rose-50/50">Chi: {filteredTransactions.filter(t=>t.type==='Expense').reduce((s,t)=>s+t.amount,0).toLocaleString('vi-VN')}</div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // 6. MAIN APP LOGIC (ĐÃ SỬA: DÙNG FIREBASE THAY VÌ SHEET)
+        const App = () => {
+            const [transactions, setTransactions] = useState([]);
+            const [categories, setCategories] = useState(() => {
+                const saved = localStorage.getItem('monify_categories');
+                return saved ? JSON.parse(saved) : DEFAULT_CATEGORIES;
+            });
+            const [selectedDate, setSelectedDate] = useState(() => normalizeDate(new Date()));
+            const [phoneNumber, setPhoneNumber] = useState(() => localStorage.getItem('monify_user_phone') || '');
+            const [syncStatus, setSyncStatus] = useState(phoneNumber ? 'loading' : 'error');
+
+            // --- KẾT NỐI FIREBASE REALTIME ---
+            useEffect(() => {
+                localStorage.setItem('monify_user_phone', phoneNumber);
+                if (!phoneNumber) { 
+                    setSyncStatus('error'); 
+                    setTransactions([]); 
+                    return; 
+                }
+
+                setSyncStatus('loading');
+                const userId = formatUserId(phoneNumber);
+
+                // Lắng nghe dữ liệu (Realtime Listener)
+                // Query: Lấy tất cả giao dịch của UserID này
+                const q = window.query(
+                    window.collection(window.db, "transactions"),
+                    window.where("userId", "==", userId)
+                );
+
+                const unsubscribe = window.onSnapshot(q, (snapshot) => {
+                    const data = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+
+                    // Sắp xếp dữ liệu (Mới nhất lên đầu)
+                    data.sort((a, b) => {
+                        if (a.date !== b.date) return new Date(b.date) - new Date(a.date);
+                        return b.time.localeCompare(a.time);
+                    });
+
+                    setTransactions(data);
+                    setSyncStatus('idle');
+                }, (error) => {
+                    console.error("Firebase Error:", error);
+                    setSyncStatus('error');
+                });
+
+                // Dọn dẹp khi đổi SĐT
+                return () => unsubscribe();
+            }, [phoneNumber]);
+
+            useEffect(() => { localStorage.setItem('monify_categories', JSON.stringify(categories)); }, [categories]);
+
+            const handleAddTransaction = async (newTransaction) => {
+                if (!phoneNumber) { alert("Vui lòng nhập số điện thoại!"); return; }
+                
+                try {
+                    // Thêm vào Firestore
+                    await window.addDoc(window.collection(window.db, "transactions"), {
+                        ...newTransaction,
+                        userId: formatUserId(phoneNumber),
+                        createdAt: new Date().toISOString()
+                    });
+                    // Không cần setTransactions thủ công vì onSnapshot sẽ tự cập nhật
+                } catch (e) {
+                    console.error("Lỗi thêm:", e);
+                    alert("Không thể lưu giao dịch. Kiểm tra mạng!");
+                }
+            };
+
+            const handleDeleteTransaction = async (id) => {
+                if (!confirm("Bạn muốn xóa giao dịch này?")) return;
+                try {
+                    await window.deleteDoc(window.doc(window.db, "transactions", id));
+                } catch (e) {
+                    console.error("Lỗi xóa:", e);
+                    alert("Lỗi khi xóa!");
+                }
+            }
+
+            return (
+                <React.Fragment>
+                    <Header phoneNumber={phoneNumber} setPhoneNumber={setPhoneNumber} syncStatus={syncStatus} />
+                    <main className="flex-1 w-full max-w-[1280px] mx-auto px-3 md:px-6 py-4 md:py-6 animate-fade-in-up">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 md:gap-6 h-full">
+                        <div className="lg:col-span-7 flex flex-col gap-5 md:gap-6 order-1 lg:order-1">
+                            <TransactionForm onAdd={handleAddTransaction} selectedDate={selectedDate} setSelectedDate={setSelectedDate} categories={categories} setCategories={setCategories} />
+                            <BudgetOverview transactions={transactions} categories={categories} />
+                        </div>
+                        <div className="lg:col-span-5 flex flex-col gap-5 md:gap-6 h-full order-2 lg:order-2">
+                            <MonthlySummary transactions={transactions} />
+                            <TransactionHistory transactions={transactions} selectedDate={selectedDate} setSelectedDate={setSelectedDate} categories={categories} onDelete={handleDeleteTransaction} />
+                        </div>
+                        </div>
+                    </main>
+                    <footer className="w-full max-w-[1280px] mx-auto px-6 py-6 text-center animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+                        <p className="text-[10px] md:text-xs font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest">Designed by <span className="text-primary hover:text-blue-600 transition-colors cursor-default">gxrtohuuloi-logistics</span></p>
+                    </footer>
+                </React.Fragment>
+            );
+        };
+
+        const rootElement = document.getElementById('root');
+        if (!rootElement) throw new Error("Could not find root element to mount to");
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(<React.StrictMode><App /></React.StrictMode>);
+    </script>
+</body>
+</html>
