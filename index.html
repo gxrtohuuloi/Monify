@@ -776,7 +776,17 @@
                 prevDate.setMonth(prevDate.getMonth() - 1);
                 const prevMonthStr = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}`;
                 
-                const prevExpenses = allTrans.filter(t => t.type === 'Expense' && t.date.startsWith(prevMonthStr));
+                // Lấy TẤT CẢ giao dịch của tháng trước (để kiểm tra có hoạt động không)
+                const prevMonthTransactions = allTrans.filter(t => t.date.startsWith(prevMonthStr));
+                
+                // NẾU THÁNG TRƯỚC KHÔNG CÓ GIAO DỊCH GÌ -> KHÔNG TÍNH DƯ
+                if (prevMonthTransactions.length === 0) {
+                    setRolloverState({ amount: 0, isDone: true }); // Coi như xong để không hiện nút
+                    return;
+                }
+
+                // Nếu có giao dịch, mới bắt đầu tính toán dư
+                const prevExpenses = prevMonthTransactions.filter(t => t.type === 'Expense');
                 let totalSurplus = 0;
                 
                 const expenseCats = currentCats.filter(c => c.type === 'Expense' && c.limit > 0);
