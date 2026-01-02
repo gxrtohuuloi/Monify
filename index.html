@@ -85,7 +85,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, where, orderBy } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAmnmGjB_lb-xgZ6wSH5i7Y0QLOiUBXRxo",
@@ -96,7 +96,6 @@
             appId: "1:894421141098:web:f6e594de9c01b3ce95ac13"
         };
 
-        // Khởi tạo và đưa ra Window để React dùng
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
@@ -109,13 +108,14 @@
         window.query = query;
         window.where = where;
         window.orderBy = orderBy;
+        window.getDocs = getDocs;
     </script>
 
     <script type="text/babel" data-presets="typescript,react">
         const { useState, useEffect, useRef, useMemo } = React;
 
         interface Category { id: string; name: string; icon: string; type: 'Expense' | 'Income'; color: string; limit: number; }
-        interface Transaction { id: string; title: string; category: string; categoryId?: string; amount: number; date: string; time: string; type: 'Expense' | 'Income'; method: string; userId?: string; }
+        interface Transaction { id: string; title: string; category: string; categoryId?: string; amount: number; date: string; time: string; type: 'Expense' | 'Income'; method: string; userId?: string; isRollover?: boolean; }
         type SyncStatus = 'idle' | 'loading' | 'error';
 
         const DEFAULT_CATEGORIES: Category[] = [
@@ -179,7 +179,7 @@
         
         const getDayOfWeek = (d) => ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'][d.getDay()];
 
-        // 5. COMPONENTS (GIỮ NGUYÊN)
+        // 5. COMPONENTS
         const DateScrollerPopup = ({ selectedDate, onSelect }) => {
             const dateListRef = useRef(null);
             const dateList = useMemo(() => {
@@ -205,7 +205,7 @@
             }, [selectedDate]);
 
             return (
-                <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-[2rem] p-4 shadow-2xl shadow-blue-500/20 border border-white/40 animate-fade-in-up origin-center">
+                <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-[2rem] p-4 shadow-2xl shadow-blue-500/20 border border-white/40 animate-fade-in-up origin-center z-50">
                     <div className="text-center mb-3">
                         <span className="text-xs font-extrabold text-gray-500/80 dark:text-gray-400 uppercase tracking-[0.2em] drop-shadow-sm">
                             Tháng {new Date(selectedDate).getMonth() + 1}, {new Date(selectedDate).getFullYear()}
@@ -560,7 +560,69 @@
             );
         };
 
-        const MonthlySummary = ({ transactions }) => {
+        const StatisticsModal = ({ onClose, transactions, categories }) => {
+            const [view, setView] = useState('Expense');
+            const stats = useMemo(() => {
+                const filtered = transactions.filter(t => t.type === view);
+                const total = filtered.reduce((sum, t) => sum + t.amount, 0);
+                const grouped = filtered.reduce((acc, t) => {
+                    const catId = t.categoryId || t.category;
+                    if (!acc[catId]) {
+                        const catInfo = categories.find(c => c.id === t.categoryId || c.name === t.category) || { name: t.category, color: 'slate', icon: 'paid' };
+                        acc[catId] = { ...catInfo, amount: 0 };
+                    }
+                    acc[catId].amount += t.amount;
+                    return acc;
+                }, {});
+                return { total, list: Object.values(grouped).sort((a, b) => b.amount - a.amount) };
+            }, [transactions, categories, view]);
+            const formatCurrency = (val) => val.toLocaleString('vi-VN');
+            const getColorClasses = (color) => {
+               const map = { orange: 'bg-orange-100 text-orange-600', blue: 'bg-blue-100 text-blue-600', emerald: 'bg-emerald-100 text-emerald-600', indigo: 'bg-indigo-100 text-indigo-600', rose: 'bg-rose-100 text-rose-600', purple: 'bg-purple-100 text-purple-600', slate: 'bg-slate-200 text-slate-600', teal: 'bg-teal-100 text-teal-600', cyan: 'bg-cyan-100 text-cyan-600', amber: 'bg-amber-100 text-amber-600', red: 'bg-red-100 text-red-600' };
+               return map[color] || map['slate'];
+            };
+
+            return (
+                <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in-up">
+                    <div className="bg-white dark:bg-slate-900 w-full md:max-w-lg md:rounded-[2.5rem] rounded-t-[2.5rem] p-6 shadow-2xl h-[85vh] md:h-auto flex flex-col max-h-[90vh]">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-bold flex items-center gap-2">Thống kê chi tiết</h2>
+                            <button onClick={onClose} className="size-8 bg-gray-100 dark:bg-white/10 rounded-full flex items-center justify-center hover:bg-gray-200"><span className="material-symbols-outlined">close</span></button>
+                        </div>
+                        <div className="flex p-1 bg-gray-100 dark:bg-white/5 rounded-2xl mb-6">
+                            <button onClick={() => setView('Expense')} className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${view === 'Expense' ? 'bg-white shadow-sm text-rose-500' : 'text-gray-500'}`}>Chi Tiêu</button>
+                            <button onClick={() => setView('Income')} className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${view === 'Income' ? 'bg-white shadow-sm text-primary' : 'text-gray-500'}`}>Thu Nhập</button>
+                        </div>
+                        <div className="text-center mb-8">
+                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tổng {view === 'Expense' ? 'Chi Tiêu' : 'Thu Nhập'}</p>
+                            <p className={`text-4xl font-black tracking-tight ${view === 'Expense' ? 'text-rose-500' : 'text-primary'}`}>{formatCurrency(stats.total)} <span className="text-lg text-gray-400 align-top">đ</span></p>
+                        </div>
+                        <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-1">
+                            {stats.list.length === 0 ? <p className="text-center text-gray-400 text-sm py-10">Chưa có dữ liệu</p> : stats.list.map((item, idx) => {
+                                const percent = stats.total > 0 ? (item.amount / stats.total) * 100 : 0;
+                                const colors = getColorClasses(item.color || 'slate');
+                                return (
+                                    <div key={idx} className="relative">
+                                        <div className="flex items-center justify-between mb-2 relative z-10">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`size-10 rounded-xl ${colors} flex items-center justify-center`}><span className="material-symbols-outlined text-[20px]">{item.icon}</span></div>
+                                                <div><p className="text-sm font-bold capitalize">{item.name}</p><p className="text-[10px] text-gray-400 font-bold">{percent.toFixed(1)}%</p></div>
+                                            </div>
+                                            <p className="text-sm font-bold">{formatCurrency(item.amount)}</p>
+                                        </div>
+                                        <div className="h-2 w-full bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                                            <div className={`h-full rounded-full ${view === 'Expense' ? 'bg-rose-400' : 'bg-blue-400'}`} style={{ width: `${percent}%` }}></div>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const MonthlySummary = ({ transactions, onOpenStats, rolloverState, onRollover }) => {
             const totalIncome = transactions.filter(t => t.type === 'Income').reduce((sum, t) => sum + t.amount, 0);
             const totalExpense = transactions.filter(t => t.type === 'Expense').reduce((sum, t) => sum + t.amount, 0);
             const formatLargeNumber = (num) => {
@@ -571,24 +633,48 @@
             const total = totalIncome + totalExpense;
             const incomePct = total > 0 ? (totalIncome / total) * 100 : 0;
             const expensePct = total > 0 ? (totalExpense / total) * 100 : 0;
+            
             return (
-                <div className="glass-panel rounded-[2.5rem] p-6 md:p-8 border-white/20 transition-all duration-300 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)]">
-                    <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-6 ml-1">Tổng quan tháng</h3>
-                    <div className="flex gap-6 items-end justify-between mb-8">
-                        <div className="flex-1 p-4 rounded-3xl bg-blue-50/60 dark:bg-blue-900/10 hover:bg-blue-50 transition-all cursor-default border border-blue-100/50">
-                        <div className="flex items-center gap-2 mb-2"><span className="size-2.5 rounded-full bg-primary shadow-[0_0_10px_rgba(19,127,236,0.6)]"></span><p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Tổng thu</p></div>
-                        <p className="text-xl md:text-2xl font-extrabold text-primary">{formatLargeNumber(totalIncome)}</p>
+                <div className="bg-white dark:bg-white/10 rounded-[2.5rem] p-6 shadow-xl shadow-blue-500/5 relative overflow-hidden transition-all duration-300 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)]">
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="flex items-center gap-2">
+                            <h3 className="text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-widest">TỔNG QUAN THÁNG</h3>
+                            {/* Nút cảnh báo Rollover - chỉ hiện khi có dư và chưa chuyển */}
+                            {rolloverState.amount > 0 && !rolloverState.isDone && (
+                                <button onClick={onRollover} className="flex items-center gap-1 bg-amber-100 text-amber-600 px-2 py-1 rounded-lg animate-pulse hover:animate-none transition-all" title="Bấm để chuyển số dư tháng trước">
+                                    <span className="material-symbols-outlined text-[16px]">warning</span>
+                                    <span className="text-[10px] font-bold">Chuyển dư</span>
+                                </button>
+                            )}
                         </div>
-                        <div className="flex-1 text-right p-4 rounded-3xl bg-rose-50/60 dark:bg-rose-900/10 hover:bg-rose-50 transition-all cursor-default border border-rose-100/50">
-                        <div className="flex items-center gap-2 justify-end mb-2"><p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Tổng chi</p><span className="size-2.5 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.6)]"></span></div>
-                        <p className="text-xl md:text-2xl font-extrabold text-rose-500">{formatLargeNumber(totalExpense)}</p>
+                        <button onClick={onOpenStats} className="size-8 rounded-full bg-gray-100 dark:bg-white/20 hover:bg-blue-50 hover:text-primary transition-colors flex items-center justify-center">
+                            <span className="material-symbols-outlined text-[18px]">bar_chart</span>
+                        </button>
+                    </div>
+                    
+                    <div className="flex gap-4 items-center justify-between mb-8">
+                        <div className="flex-1 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl p-4 border border-blue-100/50">
+                            <div className="flex items-center gap-2 mb-1">
+                                <span className="size-2 rounded-full bg-blue-500"></span>
+                                <span className="text-xs font-bold text-gray-500 uppercase">Tổng Thu</span>
+                            </div>
+                            <p className="text-2xl font-extrabold text-blue-600">{formatLargeNumber(totalIncome)}</p>
+                        </div>
+
+                        <div className="flex-1 text-right bg-rose-50/50 dark:bg-rose-900/10 rounded-2xl p-4 border border-rose-100/50">
+                            <div className="flex items-center gap-2 justify-end mb-1">
+                                <span className="text-xs font-bold text-gray-500 uppercase">Tổng Chi</span>
+                                <span className="size-2 rounded-full bg-rose-500"></span>
+                            </div>
+                            <p className="text-2xl font-extrabold text-rose-500">{formatLargeNumber(totalExpense)}</p>
                         </div>
                     </div>
-                    <div className="relative h-6 w-full bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden flex border border-white/50 shadow-inner p-1">
-                        <div className="h-full rounded-l-full bg-gradient-to-r from-blue-400 to-primary shadow-[0_0_15px_rgba(19,127,236,0.4)] transition-all duration-1000 ease-out" style={{ width: `${incomePct}%` }}></div>
-                        <div className="h-full rounded-r-full bg-gradient-to-r from-rose-400 to-rose-600 shadow-[0_0_15px_rgba(244,63,94,0.4)] transition-all duration-1000 ease-out" style={{ width: `${expensePct}%` }}></div>
+
+                    <div className="relative h-5 w-full bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden flex shadow-inner">
+                        <div className="h-full bg-blue-500 shadow-sm transition-all duration-1000 ease-out" style={{ width: `${incomePct}%` }}></div>
+                        <div className="h-full bg-rose-500 shadow-sm transition-all duration-1000 ease-out" style={{ width: `${expensePct}%` }}></div>
                     </div>
-                    <div className="flex justify-between text-[11px] text-gray-400 mt-3 font-bold px-2 uppercase tracking-wide">
+                    <div className="flex justify-between text-[10px] text-gray-400 mt-2 font-bold px-1 uppercase tracking-wide">
                         <span>{incomePct > 0 ? `${incomePct.toFixed(0)}%` : '0%'}</span><span>{expensePct > 0 ? `${expensePct.toFixed(0)}%` : '0%'}</span>
                     </div>
                 </div>
@@ -665,7 +751,6 @@
             );
         };
 
-        // 6. MAIN APP LOGIC (ĐÃ SỬA: DÙNG FIREBASE THAY VÌ SHEET)
         const App = () => {
             const [transactions, setTransactions] = useState([]);
             const [categories, setCategories] = useState(() => {
@@ -675,8 +760,63 @@
             const [selectedDate, setSelectedDate] = useState(() => normalizeDate(new Date()));
             const [phoneNumber, setPhoneNumber] = useState(() => localStorage.getItem('monify_user_phone') || '');
             const [syncStatus, setSyncStatus] = useState(phoneNumber ? 'loading' : 'error');
+            const [showStats, setShowStats] = useState(false);
+            const [rolloverState, setRolloverState] = useState({ amount: 0, isDone: false });
 
-            // --- KẾT NỐI FIREBASE REALTIME ---
+            // Logic tính toán Rollover (thụ động, không tự add)
+            const calculateRollover = (allTrans, currentCats) => {
+                const now = new Date();
+                const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                
+                // 1. Kiểm tra đã chuyển chưa
+                const hasRollover = allTrans.some(t => t.isRollover && t.date.startsWith(currentMonthStr));
+                
+                // 2. Tính toán tháng trước
+                const prevDate = new Date();
+                prevDate.setMonth(prevDate.getMonth() - 1);
+                const prevMonthStr = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}`;
+                
+                const prevExpenses = allTrans.filter(t => t.type === 'Expense' && t.date.startsWith(prevMonthStr));
+                let totalSurplus = 0;
+                
+                const expenseCats = currentCats.filter(c => c.type === 'Expense' && c.limit > 0);
+                expenseCats.forEach(cat => {
+                    const spent = prevExpenses.filter(t => t.categoryId === cat.id || t.category === cat.name).reduce((sum, t) => sum + t.amount, 0);
+                    const remain = cat.limit - spent;
+                    if (remain > 0) totalSurplus += remain;
+                });
+
+                setRolloverState({ amount: totalSurplus, isDone: hasRollover });
+            };
+
+            // Hàm thực hiện Rollover khi user bấm nút
+            const handleRolloverClick = async () => {
+                if (!rolloverState.amount) return;
+                const confirmMsg = `Tháng trước bạn còn dư ${rolloverState.amount.toLocaleString('vi-VN')}đ.\nBạn muốn chuyển số tiền này vào Thu nhập tháng này không?`;
+                if (!confirm(confirmMsg)) return;
+
+                const prevDate = new Date();
+                prevDate.setMonth(prevDate.getMonth() - 1);
+
+                try {
+                    await window.addDoc(window.collection(window.db, "transactions"), {
+                        userId: formatUserId(phoneNumber),
+                        title: `Số dư tháng ${prevDate.getMonth() + 1}`,
+                        category: 'Thu Nhập', 
+                        categoryId: 'rollover_auto',
+                        amount: rolloverState.amount,
+                        date: normalizeDate(new Date()), 
+                        time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+                        type: 'Income',
+                        method: 'Chuyển dư',
+                        isRollover: true 
+                    });
+                    // setRolloverState sẽ tự update qua onSnapshot
+                } catch (e) {
+                    alert("Lỗi kết nối!");
+                }
+            };
+
             useEffect(() => {
                 localStorage.setItem('monify_user_phone', phoneNumber);
                 if (!phoneNumber) { 
@@ -687,9 +827,6 @@
 
                 setSyncStatus('loading');
                 const userId = formatUserId(phoneNumber);
-
-                // Lắng nghe dữ liệu (Realtime Listener)
-                // Query: Lấy tất cả giao dịch của UserID này
                 const q = window.query(
                     window.collection(window.db, "transactions"),
                     window.where("userId", "==", userId)
@@ -700,37 +837,34 @@
                         id: doc.id,
                         ...doc.data()
                     }));
-
-                    // Sắp xếp dữ liệu (Mới nhất lên đầu)
                     data.sort((a, b) => {
                         if (a.date !== b.date) return new Date(b.date) - new Date(a.date);
                         return b.time.localeCompare(a.time);
                     });
-
                     setTransactions(data);
                     setSyncStatus('idle');
+                    
+                    // Tính toán lại trạng thái Rollover mỗi khi data đổi
+                    calculateRollover(data, categories);
+
                 }, (error) => {
                     console.error("Firebase Error:", error);
                     setSyncStatus('error');
                 });
 
-                // Dọn dẹp khi đổi SĐT
                 return () => unsubscribe();
-            }, [phoneNumber]);
+            }, [phoneNumber, categories]); // Thêm categories vào dep để tính lại nếu limit đổi
 
             useEffect(() => { localStorage.setItem('monify_categories', JSON.stringify(categories)); }, [categories]);
 
             const handleAddTransaction = async (newTransaction) => {
                 if (!phoneNumber) { alert("Vui lòng nhập số điện thoại!"); return; }
-                
                 try {
-                    // Thêm vào Firestore
                     await window.addDoc(window.collection(window.db, "transactions"), {
                         ...newTransaction,
                         userId: formatUserId(phoneNumber),
                         createdAt: new Date().toISOString()
                     });
-                    // Không cần setTransactions thủ công vì onSnapshot sẽ tự cập nhật
                 } catch (e) {
                     console.error("Lỗi thêm:", e);
                     alert("Không thể lưu giao dịch. Kiểm tra mạng!");
@@ -747,6 +881,8 @@
                 }
             }
 
+            const currentMonthTrans = transactions.filter(t => t.date.startsWith(selectedDate.substring(0, 7)));
+
             return (
                 <React.Fragment>
                     <Header phoneNumber={phoneNumber} setPhoneNumber={setPhoneNumber} syncStatus={syncStatus} />
@@ -757,7 +893,12 @@
                             <BudgetOverview transactions={transactions} categories={categories} />
                         </div>
                         <div className="lg:col-span-5 flex flex-col gap-5 md:gap-6 h-full order-2 lg:order-2">
-                            <MonthlySummary transactions={transactions} />
+                            <MonthlySummary 
+                                transactions={currentMonthTrans} 
+                                onOpenStats={() => setShowStats(true)} 
+                                rolloverState={rolloverState}
+                                onRollover={handleRolloverClick}
+                            />
                             <TransactionHistory transactions={transactions} selectedDate={selectedDate} setSelectedDate={setSelectedDate} categories={categories} onDelete={handleDeleteTransaction} />
                         </div>
                         </div>
@@ -765,6 +906,7 @@
                     <footer className="w-full max-w-[1280px] mx-auto px-6 py-6 text-center animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
                         <p className="text-[10px] md:text-xs font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest">Designed by <span className="text-primary hover:text-blue-600 transition-colors cursor-default">gxrtohuuloi-logistics</span></p>
                     </footer>
+                    {showStats && <StatisticsModal onClose={() => setShowStats(false)} transactions={currentMonthTrans} categories={categories} />}
                 </React.Fragment>
             );
         };
