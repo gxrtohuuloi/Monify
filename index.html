@@ -23,6 +23,9 @@
             darkMode: "class",
             theme: {
                 extend: {
+                    screens: {
+                        'xs': '380px',
+                    },
                     colors: {
                         "primary": "#3b82f6",
                         "primary-dark": "#2563eb",
@@ -309,7 +312,7 @@
                     <div className="flex-shrink-0">
                         <div className="glass-panel rounded-full p-2 pr-6 flex items-center gap-3">
                             <SkeletonBlock className="size-10 rounded-full" />
-                            <SkeletonBlock className="h-6 w-24 rounded-lg" />
+                            <SkeletonBlock className="h-6 w-24 rounded-lg hidden xs:block" />
                         </div>
                     </div>
                     <SkeletonBlock className="h-12 w-36 rounded-full" />
@@ -416,20 +419,20 @@
             useEffect(() => {
                 if (spanRef.current) {
                     const textWidth = spanRef.current.offsetWidth;
-                    setInputWidth(Math.max(80, textWidth + 16));
+                    setInputWidth(Math.max(100, textWidth + 20));
                 }
             }, [phoneNumber]);
 
             return (
                 <header className="sticky top-0 z-50 px-3 md:px-6 py-4 mx-auto w-full max-w-[1280px]">
-                    <div className="flex items-center justify-between w-full">
-                        <div className="flex-shrink-0 flex items-center gap-4">
-                            <div className="glass-panel rounded-full p-2 pr-6 flex items-center gap-3 animate-float shadow-glass hover:shadow-glass-hover transition-all duration-300">
-                                <div className="size-11 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white shadow-lg shadow-blue-500/30 relative overflow-hidden shrink-0 border border-white/20">
+                    <div className="flex items-center justify-between w-full gap-2">
+                        <div className="flex-shrink-0 flex items-center gap-2 md:gap-4">
+                            <div className="glass-panel rounded-full p-2 md:pr-6 flex items-center gap-3 animate-float shadow-glass hover:shadow-glass-hover transition-all duration-300">
+                                <div className="size-9 md:size-11 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white shadow-lg shadow-blue-500/30 relative overflow-hidden shrink-0 border border-white/20">
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
-                                    <span className="material-symbols-rounded text-[24px] drop-shadow-md">cloud_circle</span>
+                                    <span className="material-symbols-rounded text-[20px] md:text-[24px] drop-shadow-md">cloud_circle</span>
                                 </div>
-                                <span className="text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-700 to-slate-900 dark:from-white dark:to-slate-300 block pb-0.5">
+                                <span className="text-xl md:text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-700 to-slate-900 dark:from-white dark:to-slate-300 hidden xs:block pb-0.5">
                                     Monify
                                 </span>
                             </div>
@@ -444,32 +447,32 @@
                             </button>
                         </div>
 
-                        <div className="flex-shrink-0 ml-auto pl-2 flex items-center gap-3">
+                        <div className="flex-shrink-0 ml-auto flex items-center gap-2 md:gap-3">
                             <button 
                                 onClick={toggleSimulation}
-                                className={`md:hidden size-11 flex items-center justify-center rounded-full border transition-all glass-panel ${isSimulationMode ? 'bg-amber-100/90 border-amber-300 text-amber-700 shadow-glow' : 'text-slate-500'}`}
+                                className={`md:hidden size-10 flex items-center justify-center rounded-full border transition-all glass-panel ${isSimulationMode ? 'bg-amber-100/90 border-amber-300 text-amber-700 shadow-glow' : 'text-slate-500'}`}
                             >
-                                <span className="material-symbols-rounded">science</span>
+                                <span className="material-symbols-rounded text-[20px]">science</span>
                             </button>
 
                             <div className="glass-panel flex items-center gap-2 rounded-full p-1.5 pl-2 transition-all duration-300 ease-out hover:shadow-glass-hover group">
-                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/60 dark:bg-black/20 shadow-inner-light border border-white/40 shrink-0">
+                                <div className="flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-full bg-white/60 dark:bg-black/20 shadow-inner-light border border-white/40 shrink-0">
                                     <div className={`size-2.5 rounded-full ${currentStatus.color} ${syncStatus === 'loading' ? 'animate-pulse' : ''} shadow-[0_0_8px_rgba(0,0,0,0.2)]`}></div>
                                     <span className="text-[10px] font-bold text-slate-500 uppercase hidden md:block">{currentStatus.text}</span>
                                 </div>
-                                <div className="relative h-10 flex items-center input-inset rounded-full px-2 transition-all group-hover:bg-white/80 dark:group-hover:bg-slate-800/50">
+                                <div className="relative h-9 md:h-10 flex items-center input-inset rounded-full px-2 transition-all group-hover:bg-white/80 dark:group-hover:bg-slate-800/50 overflow-hidden max-w-[120px] sm:max-w-none">
                                     <span ref={spanRef} className="absolute opacity-0 pointer-events-none whitespace-pre text-sm font-bold font-display px-2" aria-hidden="true">{phoneNumber || "Nhập SĐT"}</span>
-                                    <input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="Nhập SĐT" style={{ width: `${inputWidth}px` }} className="bg-transparent border-none p-0 px-2 text-sm font-bold font-display text-slate-700 dark:text-white placeholder:text-slate-400 placeholder:font-medium focus:ring-0 text-center transition-all duration-300 ease-out"/>
+                                    <input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="Nhập SĐT" style={{ width: `${inputWidth}px` }} className="bg-transparent border-none p-0 px-2 text-sm font-bold font-display text-slate-700 dark:text-white placeholder:text-slate-400 placeholder:font-medium focus:ring-0 text-center transition-all duration-300 ease-out max-w-full"/>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
                     {isSimulationMode && (
-                        <div className="absolute top-full left-0 right-0 text-center mt-3 animate-fade-in-up pointer-events-none">
+                        <div className="absolute top-full left-0 right-0 text-center mt-3 animate-fade-in-up pointer-events-none z-0">
                             <span className="bg-amber-100/90 backdrop-blur-md text-amber-800 text-[10px] font-bold px-4 py-1.5 rounded-full border border-amber-200 shadow-lg shadow-amber-500/10 inline-flex items-center gap-2">
                                 <span className="material-symbols-rounded text-[14px]">science</span>
-                                Đang chạy chế độ giả lập - Dữ liệu không được lưu
+                                Đang giả lập - Không lưu
                             </span>
                         </div>
                     )}
@@ -579,18 +582,18 @@
             const filteredCategories = categories.filter(c => c.type === (type === 'Thu' ? 'Income' : 'Expense'));
 
             return (
-                <div className={`glass-panel glass-hover rounded-[2rem] p-6 md:p-8 flex flex-col gap-8 relative z-20 overflow-hidden ${isSimulationMode ? 'shadow-amber-500/10' : ''}`}>
+                <div className={`glass-panel glass-hover rounded-[2rem] p-5 md:p-8 flex flex-col gap-6 md:gap-8 relative z-20 overflow-hidden ${isSimulationMode ? 'shadow-amber-500/10' : ''}`}>
                     <div className="absolute -top-20 -right-20 size-60 rounded-full bg-gradient-to-br from-white/60 to-white/0 blur-3xl opacity-30 pointer-events-none"></div>
 
                     <div className="flex items-center justify-between relative z-10">
-                        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
+                        <h1 className="text-xl md:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
                             {isSimulationMode ? <span className="size-3 rounded-full bg-amber-500 animate-pulse"></span> : null}
                             {isSimulationMode ? 'Giả lập chi tiêu' : 'Nhập giao dịch'}
                         </h1>
                     </div>
                     
                     <div className="flex w-full relative z-10">
-                        <div className="flex h-14 w-full items-center justify-center rounded-2xl bg-slate-100/80 dark:bg-black/30 p-1.5 shadow-inner-light">
+                        <div className="flex h-12 md:h-14 w-full items-center justify-center rounded-2xl bg-slate-100/80 dark:bg-black/30 p-1.5 shadow-inner-light">
                         <label className={`flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-xl px-2 text-sm font-bold transition-all duration-300 ${type === 'Thu' ? 'bg-white shadow-md text-primary scale-100 ring-1 ring-black/5' : 'text-slate-500 hover:bg-white/30 scale-95'}`}>
                             <span className="truncate">Thu Nhập</span>
                             <input className="invisible w-0 absolute" name="transaction_type" type="radio" checked={type === 'Thu'} onChange={() => setType('Thu')} />
@@ -604,15 +607,15 @@
                     
                     <div className="relative group px-1 z-10">
                         <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-widest pl-1">Số tiền</label>
-                        <div className="relative h-24 w-full cursor-text transition-transform duration-300 group-hover:scale-[1.01]" onClick={() => inputRef.current?.focus()}>
+                        <div className="relative h-16 md:h-24 w-full cursor-text transition-transform duration-300 group-hover:scale-[1.01]" onClick={() => inputRef.current?.focus()}>
                             <div className="absolute inset-0 flex items-center border-b-[3px] border-slate-200 dark:border-slate-700 pointer-events-none z-0 group-hover:border-slate-300 dark:group-hover:border-slate-600 transition-colors">
-                            <span className={`text-6xl md:text-7xl font-black transition-all select-none tracking-tight ${amount ? 'text-slate-800 dark:text-white drop-shadow-sm' : 'text-slate-200 dark:text-slate-800'}`}>
+                            <span className={`text-5xl md:text-7xl font-black transition-all select-none tracking-tight truncate w-full ${amount ? 'text-slate-800 dark:text-white drop-shadow-sm' : 'text-slate-200 dark:text-slate-800'}`}>
                                 {amount ? displayValue : '0'}
                             </span>
-                            {isFocused && <span className={`w-1 h-14 md:h-16 ml-2 rounded-full ${isSimulationMode ? 'bg-amber-500 animate-pulse' : 'bg-primary animate-pulse'}`}></span>}
+                            {isFocused && <span className={`w-1 h-10 md:h-16 ml-2 rounded-full flex-shrink-0 ${isSimulationMode ? 'bg-amber-500 animate-pulse' : 'bg-primary animate-pulse'}`}></span>}
                             </div>
                             <input ref={inputRef} className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-text" type="tel" inputMode="numeric" pattern="[0-9]*" autoComplete="off" value={amount} onChange={handleAmountChange} onKeyDown={handleKeyDown} onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)} />
-                            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-3 z-20">
+                            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-3 z-20 pl-4 bg-gradient-to-l from-[#f8fafc] dark:from-[#0f172a] to-transparent">
                                 {amount && (
                                     <button onClick={(e) => { e.stopPropagation(); setAmount(''); inputRef.current?.focus(); }} className="size-8 rounded-full bg-slate-200/50 dark:bg-slate-700/50 flex items-center justify-center text-slate-500 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors backdrop-blur-sm">
                                         <span className="material-symbols-rounded text-sm">close</span>
@@ -630,13 +633,13 @@
                                 <span className="material-symbols-rounded text-[14px]">settings</span>Tùy chỉnh
                             </button>
                         </div>
-                        <div className="flex flex-wrap gap-3">
+                        <div className="flex flex-wrap gap-2 md:gap-3">
                         {filteredCategories.map((cat) => {
                             const colors = getColorClasses(cat.color);
                             return (
-                                <button key={cat.id} onClick={() => setCurrentCategory(cat.id)} className={`flex items-center gap-2 px-5 py-3 rounded-2xl transition-all duration-300 border ${currentCategory === cat.id ? `bg-white text-slate-900 shadow-lg ${colors.shadow} border-white scale-105 ring-2 ring-${cat.color}-500/30` : 'bg-white/40 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-white/20 hover:bg-white/60 hover:scale-105 hover:shadow-md'}`} style={currentCategory === cat.id ? { backgroundImage: `linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)` } : {}}>
-                                <span className={`material-symbols-rounded text-[22px] ${currentCategory === cat.id ? `text-${cat.color}-500` : 'opacity-70'}`}>{cat.icon}</span>
-                                <span className="text-sm font-bold font-body capitalize">{cat.name}</span>
+                                <button key={cat.id} onClick={() => setCurrentCategory(cat.id)} className={`flex items-center gap-2 px-3 md:px-5 py-2 md:py-3 rounded-2xl transition-all duration-300 border ${currentCategory === cat.id ? `bg-white text-slate-900 shadow-lg ${colors.shadow} border-white scale-105 ring-2 ring-${cat.color}-500/30` : 'bg-white/40 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-white/20 hover:bg-white/60 hover:scale-105 hover:shadow-md'}`} style={currentCategory === cat.id ? { backgroundImage: `linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)` } : {}}>
+                                <span className={`material-symbols-rounded text-[20px] md:text-[22px] ${currentCategory === cat.id ? `text-${cat.color}-500` : 'opacity-70'}`}>{cat.icon}</span>
+                                <span className="text-xs md:text-sm font-bold font-body capitalize">{cat.name}</span>
                                 </button>
                             )
                         })}
@@ -653,12 +656,12 @@
                             </>
                         )}
                         <button onClick={() => setIsDatePickerOpen(!isDatePickerOpen)} className={`w-full mt-2 input-inset rounded-[2rem] p-3 pr-3 flex items-center gap-4 transition-all cursor-pointer select-none group ${isDatePickerOpen ? 'ring-2 ring-blue-400/50 bg-white/80' : 'hover:bg-white/50'}`}>
-                            <div className="size-14 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center text-blue-500">
-                                <span className="material-symbols-rounded text-[26px]">calendar_today</span>
+                            <div className="size-12 md:size-14 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center text-blue-500 shrink-0">
+                                <span className="material-symbols-rounded text-[24px] md:text-[26px]">calendar_today</span>
                             </div>
                             <div className="text-left flex-1">
                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Ngày giao dịch</p>
-                                <p className="text-xl font-black text-slate-800 dark:text-white tracking-tight group-hover:text-primary transition-colors">{new Date(selectedDate).toLocaleDateString('vi-VN')}</p>
+                                <p className="text-lg md:text-xl font-black text-slate-800 dark:text-white tracking-tight group-hover:text-primary transition-colors">{new Date(selectedDate).toLocaleDateString('vi-VN')}</p>
                             </div>
                         </button>
                     </div>
@@ -675,21 +678,21 @@
                     </div>
 
                     {isManageModalOpen && (
-                        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-fade-in-up">
-                            <div className="glass-panel w-full max-w-lg rounded-[2.5rem] p-8 bg-white/90 dark:bg-slate-900 shadow-2xl relative max-h-[90vh] overflow-y-auto border border-white/60">
-                                <div className="flex justify-between items-center mb-8">
-                                    <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Quản lý danh mục</h2>
+                        <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center p-0 md:p-4 bg-slate-900/40 backdrop-blur-md animate-fade-in-up">
+                            <div className="glass-panel w-full md:max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 md:p-8 bg-white/95 dark:bg-slate-900 shadow-2xl relative max-h-[85vh] overflow-y-auto border border-white/60 flex flex-col">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white">Quản lý danh mục</h2>
                                     <button onClick={() => setIsManageModalOpen(false)} className="size-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"><span className="material-symbols-rounded text-slate-600">close</span></button>
                                 </div>
-                                <div className="bg-slate-50/80 dark:bg-white/5 p-6 rounded-3xl mb-8 border border-slate-200 dark:border-white/10 shadow-inner">
-                                    <div className="grid grid-cols-2 gap-5 mb-5">
+                                <div className="bg-slate-50/80 dark:bg-white/5 p-4 md:p-6 rounded-3xl mb-6 border border-slate-200 dark:border-white/10 shadow-inner shrink-0">
+                                    <div className="grid grid-cols-2 gap-4 mb-4">
                                         <div className="col-span-2">
                                                 <label className="text-xs font-bold text-slate-400 block mb-2 uppercase tracking-wide">Tên danh mục</label>
-                                                <input type="text" value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder="Ví dụ: Du lịch" className="w-full rounded-xl border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-primary bg-white dark:bg-black/20 text-sm font-bold font-body p-4 capitalize shadow-sm transition-all" />
+                                                <input type="text" value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder="Ví dụ: Du lịch" className="w-full rounded-xl border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-primary bg-white dark:bg-black/20 text-sm font-bold font-body p-3 md:p-4 capitalize shadow-sm transition-all" />
                                         </div>
                                         <div>
                                                 <label className="text-xs font-bold text-slate-400 block mb-2 uppercase tracking-wide">Ngân sách</label>
-                                                <input type="number" value={newCatLimit} onChange={(e) => setNewCatLimit(e.target.value)} placeholder="0" disabled={type === 'Thu'} className="w-full rounded-xl border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-primary bg-white dark:bg-black/20 text-sm font-bold p-4 shadow-sm disabled:opacity-50 transition-all" />
+                                                <input type="number" value={newCatLimit} onChange={(e) => setNewCatLimit(e.target.value)} placeholder="0" disabled={type === 'Thu'} className="w-full rounded-xl border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-primary bg-white dark:bg-black/20 text-sm font-bold p-3 md:p-4 shadow-sm disabled:opacity-50 transition-all" />
                                         </div>
                                         <div className="col-span-2">
                                                 <label className="text-xs font-bold text-slate-400 block mb-2 uppercase tracking-wide">Biểu tượng</label>
@@ -705,14 +708,14 @@
                                         {editingId && <button onClick={resetForm} className="px-6 bg-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-300 transition-colors">Hủy</button>}
                                     </div>
                                 </div>
-                                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
+                                <div className="space-y-3 flex-1 overflow-y-auto pr-1 custom-scrollbar min-h-[200px]">
                                     {filteredCategories.map(cat => (
-                                        <div key={cat.id} className="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-white/5 border border-slate-100 dark:border-white/10 group hover:border-slate-300 transition-all">
-                                            <div className="flex items-center gap-4">
-                                                <div className={`size-12 rounded-xl flex items-center justify-center ${getColorClasses(cat.color).bg} ${getColorClasses(cat.color).text}`}><span className="material-symbols-rounded">{cat.icon}</span></div>
+                                        <div key={cat.id} className="flex items-center justify-between p-3 rounded-2xl bg-white dark:bg-white/5 border border-slate-100 dark:border-white/10 group hover:border-slate-300 transition-all">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`size-10 rounded-xl flex items-center justify-center ${getColorClasses(cat.color).bg} ${getColorClasses(cat.color).text}`}><span className="material-symbols-rounded text-[20px]">{cat.icon}</span></div>
                                                 <div><p className="text-sm font-bold font-body capitalize">{cat.name}</p></div>
                                             </div>
-                                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="flex gap-2">
                                                 <button onClick={() => handleEditCategory(cat)} className="size-9 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 flex items-center justify-center transition-colors"><span className="material-symbols-rounded text-[18px]">edit</span></button>
                                                 <button onClick={() => handleDeleteCategory(cat.id)} className="size-9 rounded-full bg-red-50 text-red-500 hover:bg-red-100 flex items-center justify-center transition-colors"><span className="material-symbols-rounded text-[18px]">delete</span></button>
                                             </div>
@@ -740,7 +743,7 @@
             return (
                 <div className="glass-panel glass-hover rounded-[2rem] p-6 md:p-8 relative overflow-hidden">
                      <div className="flex items-center justify-between mb-8 relative z-10">
-                        <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">Ngân sách dự kiến</h3>
+                        <h3 className="text-lg md:text-xl font-extrabold text-slate-900 dark:text-white">Ngân sách dự kiến</h3>
                         <span className="text-xs text-slate-400 font-bold bg-white/50 px-2 py-1 rounded-lg">Đồng bộ</span>
                     </div>
                     {budgets.length === 0 ? (
@@ -769,8 +772,8 @@
                             return (
                                 <div key={budget.id} className={`group ${shakeClass}`}>
                                 <div className="flex justify-between items-end mb-2.5">
-                                    <div className="flex items-center gap-4">
-                                    <div className={`p-2.5 rounded-2xl ${colors.bg} ${colors.text} ring-1 ring-white/50 backdrop-blur-md transition-all duration-300 group-hover:scale-110 shadow-sm`}><span className="material-symbols-rounded text-[20px]">{budget.icon}</span></div>
+                                    <div className="flex items-center gap-3 md:gap-4">
+                                    <div className={`p-2 md:p-2.5 rounded-2xl ${colors.bg} ${colors.text} ring-1 ring-white/50 backdrop-blur-md transition-all duration-300 group-hover:scale-110 shadow-sm`}><span className="material-symbols-rounded text-[20px]">{budget.icon}</span></div>
                                     <span className="text-sm font-bold text-slate-700 dark:text-white capitalize flex items-center gap-1.5">
                                         {budget.name}
                                         {warningIcon}
@@ -815,33 +818,33 @@
 
             return (
                 <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-900/60 backdrop-blur-lg animate-fade-in-up">
-                    <div className="bg-white dark:bg-slate-900 w-full md:max-w-lg md:rounded-[2.5rem] rounded-t-[2.5rem] p-8 shadow-2xl h-[85vh] md:h-auto flex flex-col max-h-[90vh] border border-white/20">
-                        <div className="flex justify-between items-center mb-8">
+                    <div className="bg-white dark:bg-slate-900 w-full md:max-w-lg md:rounded-[2.5rem] rounded-t-[2.5rem] p-6 md:p-8 shadow-2xl h-[90vh] md:h-auto flex flex-col max-h-[90vh] border border-white/20">
+                        <div className="flex justify-between items-center mb-6">
                             <h2 className="text-2xl font-bold flex items-center gap-2">Thống kê chi tiết</h2>
                             <button onClick={onClose} className="size-10 bg-slate-100 dark:bg-white/10 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors"><span className="material-symbols-rounded">close</span></button>
                         </div>
-                        <div className="flex p-1.5 bg-slate-100 dark:bg-white/5 rounded-2xl mb-8">
+                        <div className="flex p-1.5 bg-slate-100 dark:bg-white/5 rounded-2xl mb-6 flex-shrink-0">
                             <button onClick={() => setView('Expense')} className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all ${view === 'Expense' ? 'bg-white shadow-md text-rose-500' : 'text-slate-500 hover:bg-white/50'}`}>Chi Tiêu</button>
                             <button onClick={() => setView('Income')} className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all ${view === 'Income' ? 'bg-white shadow-md text-primary' : 'text-slate-500 hover:bg-white/50'}`}>Thu Nhập</button>
                         </div>
-                        <div className="text-center mb-10">
+                        <div className="text-center mb-8 flex-shrink-0">
                             <p className="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-2">Tổng {view === 'Expense' ? 'Chi Tiêu' : 'Thu Nhập'}</p>
-                            <p className={`text-5xl font-black tracking-tight ${view === 'Expense' ? 'text-rose-500' : 'text-primary'}`}>{formatCurrency(stats.total)} <span className="text-xl text-slate-400 align-top font-bold">đ</span></p>
+                            <p className={`text-4xl md:text-5xl font-black tracking-tight ${view === 'Expense' ? 'text-rose-500' : 'text-primary'}`}>{formatCurrency(stats.total)} <span className="text-xl text-slate-400 align-top font-bold">đ</span></p>
                         </div>
-                        <div className="flex-1 overflow-y-auto custom-scrollbar space-y-6 pr-2">
+                        <div className="flex-1 overflow-y-auto custom-scrollbar space-y-5 pr-2">
                             {stats.list.length === 0 ? <p className="text-center text-slate-400 text-sm py-10 italic">Chưa có dữ liệu</p> : stats.list.map((item, idx) => {
                                 const percent = stats.total > 0 ? (item.amount / stats.total) * 100 : 0;
                                 const colors = getColorClasses(item.color || 'slate');
                                 return (
                                     <div key={idx} className="relative group">
-                                        <div className="flex items-center justify-between mb-3 relative z-10">
+                                        <div className="flex items-center justify-between mb-2 relative z-10">
                                             <div className="flex items-center gap-4">
-                                                <div className={`size-12 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform ${colors.bg} ${colors.text}`}><span className="material-symbols-rounded text-[22px]">{item.icon}</span></div>
+                                                <div className={`size-10 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform ${colors.bg} ${colors.text}`}><span className="material-symbols-rounded text-[20px]">{item.icon}</span></div>
                                                 <div><p className="text-sm font-bold capitalize text-slate-800 dark:text-white">{item.name}</p><p className="text-[11px] text-slate-400 font-bold mt-0.5">{percent.toFixed(1)}%</p></div>
                                             </div>
-                                            <p className="text-base font-bold text-slate-700 dark:text-slate-200">{formatCurrency(item.amount)}</p>
+                                            <p className="text-sm md:text-base font-bold text-slate-700 dark:text-slate-200">{formatCurrency(item.amount)}</p>
                                         </div>
-                                        <div className={`h-2.5 w-full rounded-full overflow-hidden shadow-inner ${colors.bg}`}>
+                                        <div className={`h-2 w-full rounded-full overflow-hidden shadow-inner ${colors.bg}`}>
                                             <div className={`h-full rounded-full shadow-sm relative bg-gradient-to-r ${colors.gradient} overflow-hidden`} style={{ width: `${percent}%` }}>
                                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-progress-shimmer w-full"></div>
                                             </div>
@@ -937,9 +940,9 @@
             };
 
             return (
-                <div className={`px-6 py-5 flex items-center gap-5 transition-all duration-300 cursor-pointer group/item border-b last:border-0 hover:pl-8 ${simClass} ${isDeleting ? 'animate-slide-out-left' : 'animate-fade-in-up'}`}>
-                    <div className={`size-12 rounded-2xl ${bgIcon} ${textIcon} flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-110 group-hover:rotate-6 ring-1 ring-black/5`}>
-                        <span className="material-symbols-rounded text-[24px]">{iconName}</span>
+                <div className={`px-4 md:px-6 py-4 md:py-5 flex items-center gap-4 md:gap-5 transition-all duration-300 cursor-pointer group/item border-b last:border-0 hover:pl-8 ${simClass} ${isDeleting ? 'animate-slide-out-left' : 'animate-fade-in-up'}`}>
+                    <div className={`size-10 md:size-12 rounded-2xl ${bgIcon} ${textIcon} flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-110 group-hover:rotate-6 ring-1 ring-black/5`}>
+                        <span className="material-symbols-rounded text-[20px] md:text-[24px]">{iconName}</span>
                     </div>
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-slate-800 dark:text-white truncate flex items-center gap-2">
@@ -949,7 +952,7 @@
                         <p className="text-xs text-slate-400 truncate mt-1 font-semibold capitalize tracking-wide">{transaction.category} • {transaction.time}</p>
                     </div>
                     <div className="text-right flex flex-col items-end gap-1">
-                        <p className={`text-base font-black tracking-tight ${isIncome ? 'text-primary' : 'text-slate-800 dark:text-white'}`}>{isIncome ? '+' : '-'} {transaction.amount.toLocaleString('vi-VN')}</p>
+                        <p className={`text-sm md:text-base font-black tracking-tight ${isIncome ? 'text-primary' : 'text-slate-800 dark:text-white'}`}>{isIncome ? '+' : '-'} {transaction.amount.toLocaleString('vi-VN')}</p>
                         <button onClick={handleDeleteClick} className="opacity-0 group-hover/item:opacity-100 transition-all text-slate-300 hover:text-red-500 p-1 -mr-2 transform translate-x-2 group-hover/item:translate-x-0" title="Xóa giao dịch"><span className="material-symbols-rounded text-[20px]">delete</span></button>
                     </div>
                 </div>
@@ -962,7 +965,7 @@
             const displayDate = new Date(selectedDate).toLocaleDateString('vi-VN', { year: 'numeric', month: 'numeric', day: 'numeric' });
 
             return (
-                <div className="glass-panel rounded-[2rem] flex-1 flex flex-col overflow-hidden transition-all duration-300 hover:shadow-glass-hover min-h-[400px]">
+                <div className="glass-panel rounded-[2rem] flex-1 flex flex-col overflow-hidden transition-all duration-300 hover:shadow-glass-hover min-h-[400px] max-h-[800px]">
                     <div className="p-6 flex justify-between items-center backdrop-blur-xl sticky top-0 z-10 border-b border-white/40 bg-white/10">
                         <h3 className="text-lg font-bold text-slate-800 dark:text-white">Lịch sử giao dịch</h3>
                         <div className="relative">
@@ -972,7 +975,7 @@
                             {isHeaderDateOpen && (
                                 <>
                                     <div className="fixed inset-0 z-40" onClick={() => setIsHeaderDateOpen(false)}></div>
-                                    <div className="absolute top-full right-0 mt-3 z-50 w-[340px]">
+                                    <div className="absolute top-full right-0 mt-3 z-50 w-[300px] md:w-[340px]">
                                         <DateScrollerPopup selectedDate={selectedDate} onSelect={(d) => { setSelectedDate(d); }} />
                                     </div>
                                 </>
@@ -1182,8 +1185,8 @@
             return (
                 <React.Fragment>
                     {isLoading ? <HeaderSkeleton /> : <Header phoneNumber={phoneNumber} setPhoneNumber={setPhoneNumber} syncStatus={syncStatus} isSimulationMode={isSimulationMode} toggleSimulation={toggleSimulation} />}
-                    <main className="flex-1 w-full max-w-[1280px] mx-auto px-3 md:px-6 py-4 md:py-6 animate-fade-in-up">
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
+                    <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 md:px-6 py-4 md:py-6 animate-fade-in-up">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 h-full">
                         <div className="lg:col-span-7 flex flex-col gap-6 order-1 lg:order-1">
                             {isLoading ? (
                                 <>
