@@ -631,7 +631,6 @@
                             const percentage = Math.min((budget.spent / limit) * 100, 100);
                             const colors = getColorClasses(budget.color);
                             const isOverBudget = budget.spent > limit && budget.limit > 0;
-                            // Sửa lại logic hiển thị màu: Nếu quá hạn mức thì hiện màu đỏ, còn không thì dùng gradient của category
                             const barGradient = isOverBudget ? 'from-red-500 to-red-600' : colors.gradient;
                             const barShadow = isOverBudget ? 'shadow-red-500/30' : colors.shadow;
                             
@@ -763,22 +762,52 @@
                 const timer = setTimeout(() => setIsMounted(true), 100);
                 return () => clearTimeout(timer);
             }, []);
+
+            // Logic hiển thị nút Rollover
+            const canRollover = rolloverState.amount > 0 && !rolloverState.isDone;
+            
+            let btnStyleClass = "";
+            let icon = "";
+            let label = "";
+
+            if (canRollover) {
+                // Style: Liquid Glass Amber (Sáng, lỏng, có chiều sâu)
+                btnStyleClass = "cursor-pointer bg-gradient-to-br from-amber-50/90 via-orange-50/80 to-amber-100/90 dark:from-amber-900/30 dark:via-orange-900/20 dark:to-amber-900/30 border-amber-200/60 dark:border-amber-500/30 text-amber-600 dark:text-amber-400 shadow-[0_4px_14px_rgba(245,158,11,0.15)] hover:shadow-[0_6px_20px_rgba(245,158,11,0.25)] hover:-translate-y-0.5 animate-pulse-slow ring-1 ring-amber-500/10";
+                icon = "currency_exchange";
+                label = "Chuyển dư";
+            } else if (rolloverState.isDone) {
+                // Style: Liquid Glass Emerald (Mờ, tinh tế)
+                btnStyleClass = "cursor-default bg-emerald-50/40 dark:bg-emerald-900/10 border-emerald-100/50 dark:border-emerald-500/20 text-emerald-600/80 dark:text-emerald-400/80";
+                icon = "check_circle";
+                label = "Đã chuyển";
+            } else {
+                // Style: Liquid Glass Gray (Trong suốt, chìm)
+                btnStyleClass = "cursor-default bg-gray-50/40 dark:bg-gray-800/10 border-gray-100/50 dark:border-gray-700/20 text-gray-400/70";
+                icon = "savings"; // Icon heo đất cho trạng thái không dư (tích lũy)
+                label = "Không dư";
+            }
             
             return (
                 <div className="glass-panel rounded-[2.5rem] p-6 shadow-xl shadow-blue-500/5 relative overflow-hidden transition-all duration-300 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)]">
                     <div className="flex justify-between items-center mb-6">
-                        <div className="flex items-center gap-2">
-                            <h3 className="text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-widest">TỔNG QUAN THÁNG</h3>
-                            {/* Nút cảnh báo Rollover - chỉ hiện khi có dư và chưa chuyển */}
-                            {rolloverState.amount > 0 && !rolloverState.isDone && (
-                                <button onClick={onRollover} className="flex items-center gap-1 bg-amber-100 text-amber-600 px-2 py-1 rounded-lg animate-pulse hover:animate-none transition-all" title="Bấm để chuyển số dư tháng trước">
-                                    <span className="material-symbols-outlined text-[16px]">warning</span>
-                                    <span className="text-[10px] font-bold">Chuyển dư</span>
-                                </button>
-                            )}
+                        <div className="flex items-center gap-3">
+                            <h3 className="text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-widest hidden md:block">TỔNG QUAN THÁNG</h3>
+                            <h3 className="text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-widest md:hidden">TỔNG QUAN</h3>
+                            
+                            <button
+                                onClick={onRollover}
+                                disabled={!canRollover}
+                                className={`relative overflow-hidden flex items-center gap-2 px-3 py-1.5 rounded-full border backdrop-blur-xl transition-all duration-300 ${btnStyleClass}`}
+                            >
+                                {/* Hiệu ứng lấp lánh (Shimmer) chỉ khi có thể chuyển */}
+                                {canRollover && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-shimmer"></div>}
+                                
+                                <span className="material-symbols-outlined text-[18px] z-10">{icon}</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider z-10 pt-[1px]">{label}</span>
+                            </button>
                         </div>
-                        <button onClick={onOpenStats} className="size-8 rounded-full bg-gray-100 dark:bg-white/20 hover:bg-blue-50 hover:text-primary transition-colors flex items-center justify-center">
-                            <span className="material-symbols-outlined text-[18px]">bar_chart</span>
+                        <button onClick={onOpenStats} className="size-10 rounded-full bg-white/50 dark:bg-white/10 hover:bg-blue-50 hover:text-primary transition-all shadow-sm border border-white/40 flex items-center justify-center group">
+                            <span className="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">bar_chart</span>
                         </button>
                     </div>
                     
@@ -893,40 +922,52 @@
             const [showStats, setShowStats] = useState(false);
             const [rolloverState, setRolloverState] = useState({ amount: 0, isDone: false });
 
-            // Logic tính toán Rollover (thụ động, không tự add)
-            const calculateRollover = (allTrans, currentCats) => {
+            // Logic tính toán Rollover MỚI
+            // Công thức: Tiền dư = Tổng Thu (tháng trước) - Tổng Chi (tháng trước)
+            const calculateRollover = (allTrans) => {
                 const now = new Date();
-                const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-                
-                // 1. Kiểm tra đã chuyển chưa
-                const hasRollover = allTrans.some(t => t.isRollover && t.date.startsWith(currentMonthStr));
-                
-                // 2. Tính toán tháng trước
-                const prevDate = new Date();
-                prevDate.setMonth(prevDate.getMonth() - 1);
-                const prevMonthStr = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}`;
-                
-                // Lấy TẤT CẢ giao dịch của tháng trước (để kiểm tra có hoạt động không)
-                const prevMonthTransactions = allTrans.filter(t => t.date.startsWith(prevMonthStr));
-                
-                // NẾU THÁNG TRƯỚC KHÔNG CÓ GIAO DỊCH GÌ -> KHÔNG TÍNH DƯ
-                if (prevMonthTransactions.length === 0) {
-                    setRolloverState({ amount: 0, isDone: true }); // Coi như xong để không hiện nút
-                    return;
+                const currentYear = now.getFullYear();
+                const currentMonth = now.getMonth(); // 0-11
+
+                // 1. Xác định chuỗi YYYY-MM của tháng trước
+                // setMonth(currentMonth - 1) tự động xử lý lùi năm (vd: tháng 1 -> tháng 12 năm trước)
+                const prevDateObj = new Date(currentYear, currentMonth - 1, 1);
+                const prevYear = prevDateObj.getFullYear();
+                const prevMonthVal = prevDateObj.getMonth() + 1; // 1-12
+                const prevMonthStr = `${prevYear}-${String(prevMonthVal).padStart(2, '0')}`;
+
+                // 2. Xác định chuỗi YYYY-MM của tháng hiện tại để kiểm tra đã chuyển chưa
+                const currentMonthVal = currentMonth + 1;
+                const currentMonthStr = `${currentYear}-${String(currentMonthVal).padStart(2, '0')}`;
+
+                // 3. Kiểm tra xem tháng này ĐÃ có giao dịch Rollover chưa
+                const hasRollover = allTrans.some(t => 
+                    t.isRollover === true && 
+                    t.date.startsWith(currentMonthStr)
+                );
+
+                // 4. Lấy tất cả giao dịch của THÁNG TRƯỚC
+                const prevMonthTrans = allTrans.filter(t => t.date.startsWith(prevMonthStr));
+
+                if (prevMonthTrans.length === 0) {
+                     setRolloverState({ amount: 0, isDone: hasRollover });
+                     return;
                 }
 
-                // Nếu có giao dịch, mới bắt đầu tính toán dư
-                const prevExpenses = prevMonthTransactions.filter(t => t.type === 'Expense');
-                let totalSurplus = 0;
+                // 5. Tính Tổng Thu & Tổng Chi tháng trước
+                const totalIncomePrev = prevMonthTrans
+                    .filter(t => t.type === 'Income')
+                    .reduce((sum, t) => sum + t.amount, 0);
                 
-                const expenseCats = currentCats.filter(c => c.type === 'Expense' && c.limit > 0);
-                expenseCats.forEach(cat => {
-                    const spent = prevExpenses.filter(t => t.categoryId === cat.id || t.category === cat.name).reduce((sum, t) => sum + t.amount, 0);
-                    const remain = cat.limit - spent;
-                    if (remain > 0) totalSurplus += remain;
-                });
+                const totalExpensePrev = prevMonthTrans
+                    .filter(t => t.type === 'Expense')
+                    .reduce((sum, t) => sum + t.amount, 0);
 
-                setRolloverState({ amount: totalSurplus, isDone: hasRollover });
+                // 6. Tính dư
+                const surplus = totalIncomePrev - totalExpensePrev;
+                const finalAmount = surplus > 0 ? surplus : 0;
+
+                setRolloverState({ amount: finalAmount, isDone: hasRollover });
             };
 
             // Hàm thực hiện Rollover khi user bấm nút
@@ -985,7 +1026,7 @@
                     setSyncStatus('idle');
                     
                     // Tính toán lại trạng thái Rollover mỗi khi data đổi
-                    calculateRollover(data, categories);
+                    calculateRollover(data);
 
                 }, (error) => {
                     console.error("Firebase Error:", error);
@@ -993,7 +1034,7 @@
                 });
 
                 return () => unsubscribe();
-            }, [phoneNumber, categories]); // Thêm categories vào dep để tính lại nếu limit đổi
+            }, [phoneNumber, categories]);
 
             useEffect(() => { localStorage.setItem('monify_categories', JSON.stringify(categories)); }, [categories]);
 
