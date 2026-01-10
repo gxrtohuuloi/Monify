@@ -5,7 +5,7 @@
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
     <title>Monify</title>
     
-    <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="100" y2="100"><stop stop-color="%233b82f6"/><stop offset="1" stop-color="%2306b6d4"/></linearGradient></defs><rect x="10" y="25" width="80" height="50" rx="12" fill="url(%23g)" shadow="0 10 20 rgba(0,0,0,0.2)"/><path d="M10 38h80v2H10z" fill="rgba(255,255,255,0.2)"/><circle cx="70" cy="50" r="8" fill="white"/><circle cx="70" cy="50" r="4" fill="%233b82f6" opacity="0.5"/></svg>'>
+    <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="100" y2="100"><stop stop-color="%233b82f6"/><stop offset="1" stop-color="%238b5cf6"/></linearGradient><filter id="f" x="-20%25" y="-20%25" width="140%25" height="140%25"><feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.2"/></filter></defs><rect x="10" y="10" width="80" height="80" rx="20" fill="url(%23g)" filter="url(%23f)"/><circle cx="50" cy="50" r="25" fill="none" stroke="white" stroke-width="6"/><path d="M50 35 L50 65 M35 50 L65 50" stroke="white" stroke-width="6" stroke-linecap="round"/></svg>'>
     
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     
@@ -337,8 +337,8 @@
                         </div>
                         
                         <div className="mb-8 text-center">
-                            <div className="size-20 mx-auto bg-gradient-to-tr from-blue-400 to-cyan-300 rounded-full flex items-center justify-center shadow-lg shadow-blue-200 mb-4">
-                                <span className="material-symbols-outlined text-white text-[40px]">person</span>
+                            <div className="size-24 mx-auto bg-gradient-to-tr from-blue-500 to-indigo-500 rounded-[2rem] flex items-center justify-center shadow-xl shadow-blue-500/20 mb-6 rotate-3 hover:rotate-0 transition-all duration-500 ring-4 ring-white">
+                                <span className="material-symbols-outlined text-white text-[48px]">phonelink_lock</span>
                             </div>
                             <p className="text-sm text-gray-500 font-medium">Nhập số điện thoại để đồng bộ dữ liệu</p>
                         </div>
@@ -393,8 +393,8 @@
                     <div className="flex items-center justify-between w-full">
                         <div className="flex-shrink-0">
                             <div className="glass-panel rounded-full p-2 pr-6 flex items-center gap-3 shadow-sm border-white/60">
-                                <div className="size-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white shadow-lg shadow-blue-200 relative overflow-hidden shrink-0">
-                                    <span className="material-symbols-outlined text-[24px]">cloud_circle</span>
+                                <div className="size-10 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30 relative overflow-hidden shrink-0 ring-2 ring-white/50">
+                                    <span className="material-symbols-outlined text-[24px]">account_balance_wallet</span>
                                 </div>
                                 <span className="text-xl font-black tracking-tight text-gray-800">
                                     Monify
@@ -604,7 +604,7 @@
                                 </div>
                             </>
                         )}
-                        <button onClick={() => setIsDatePickerOpen(!isDatePickerOpen)} className={`w-full bg-white rounded-[2rem] p-3 pr-6 flex items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer select-none group`}>
+                        <button onClick={() => setIsDatePickerOpen(!isDatePickerOpen)} className={`w-full bg-white rounded-[2rem] p-3 pr-6 flex items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer select-none group active:scale-95`}>
                             <div className="size-14 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center">
                                 <span className="material-symbols-outlined text-[26px]">calendar_month</span>
                             </div>
@@ -612,7 +612,6 @@
                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Ngày giao dịch</p>
                                 <p className="text-xl font-black text-gray-800 tracking-tight">{new Date(selectedDate).toLocaleDateString('vi-VN')}</p>
                             </div>
-                            <span className="material-symbols-outlined text-gray-300">expand_more</span>
                         </button>
                     </div>
 
@@ -867,6 +866,13 @@
             const [view, setView] = useState('Expense');
             const [isMounted, setIsMounted] = useState(false);
             useEffect(() => { requestAnimationFrame(() => setIsMounted(true)); }, []);
+            
+            const overview = useMemo(() => {
+                const inc = transactions.filter(t => t.type === 'Income').reduce((acc, t) => acc + t.amount, 0);
+                const exp = transactions.filter(t => t.type === 'Expense').reduce((acc, t) => acc + t.amount, 0);
+                return { income: inc, expense: exp, balance: inc - exp };
+            }, [transactions]);
+
             const stats = useMemo(() => {
                 const filtered = transactions.filter(t => t.type === view);
                 const total = filtered.reduce((sum, t) => sum + t.amount, 0);
@@ -889,14 +895,28 @@
                             <h2 className="text-xl font-bold text-gray-800">Thống kê</h2>
                             <button onClick={onClose} className="size-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-gray-100"><span className="material-symbols-outlined text-gray-600">close</span></button>
                         </div>
-                        <div className="flex p-1 bg-gray-100 rounded-[1.5rem] mb-8">
+
+                        {/* Exact Balance Display Section */}
+                        <div className="grid grid-cols-3 gap-2 mb-6">
+                            <div className="p-3 bg-blue-50 rounded-2xl border border-blue-100 text-center">
+                                <p className="text-[10px] font-bold text-blue-400 uppercase">Thu</p>
+                                <p className="text-sm font-black text-blue-600 truncate">{overview.income.toLocaleString('vi-VN')}</p>
+                            </div>
+                            <div className="p-3 bg-rose-50 rounded-2xl border border-rose-100 text-center">
+                                <p className="text-[10px] font-bold text-rose-400 uppercase">Chi</p>
+                                <p className="text-sm font-black text-rose-600 truncate">{overview.expense.toLocaleString('vi-VN')}</p>
+                            </div>
+                            <div className={`p-3 rounded-2xl border text-center ${overview.balance >= 0 ? 'bg-emerald-50 border-emerald-100' : 'bg-gray-50 border-gray-100'}`}>
+                                <p className={`text-[10px] font-bold uppercase ${overview.balance >= 0 ? 'text-emerald-500' : 'text-gray-500'}`}>Số dư</p>
+                                <p className={`text-sm font-black truncate ${overview.balance >= 0 ? 'text-emerald-700' : 'text-gray-700'}`}>{overview.balance.toLocaleString('vi-VN')}</p>
+                            </div>
+                        </div>
+
+                        <div className="flex p-1 bg-gray-100 rounded-[1.5rem] mb-6">
                             <button onClick={() => setView('Expense')} className={`flex-1 py-3 rounded-[1.2rem] text-sm font-bold transition-all ${view === 'Expense' ? 'bg-white shadow-md text-rose-500' : 'text-gray-400'}`}>Chi Tiêu</button>
                             <button onClick={() => setView('Income')} className={`flex-1 py-3 rounded-[1.2rem] text-sm font-bold transition-all ${view === 'Income' ? 'bg-white shadow-md text-blue-500' : 'text-gray-400'}`}>Thu Nhập</button>
                         </div>
-                        <div className="text-center mb-8">
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tổng {view === 'Expense' ? 'Chi Tiêu' : 'Thu Nhập'}</p>
-                            <p className={`text-4xl font-black tracking-tight ${view === 'Expense' ? 'text-rose-500' : 'text-blue-500'}`}>{stats.total.toLocaleString('vi-VN')} <span className="text-lg text-gray-300 align-top">đ</span></p>
-                        </div>
+                        
                         <div className="flex-1 overflow-y-auto no-scrollbar space-y-5 pr-1">
                             {stats.list.length === 0 ? <p className="text-center text-gray-300 text-sm py-10">Chưa có dữ liệu</p> : stats.list.map((item, idx) => {
                                 const colors = getColorClasses(item.color || 'slate');
