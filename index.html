@@ -810,7 +810,7 @@
                     </div>
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-gray-800 truncate">{transaction.title}</p>
-                        <p className="text-xs text-gray-400 truncate mt-0.5 font-bold capitalize">{transaction.category} • {transaction.time}</p>
+                        <p className="text-xs text-gray-400 truncate mt-0.5 font-bold capitalize">{categoryInfo ? categoryInfo.name : transaction.category} • {transaction.time}</p>
                     </div>
                     <div className="text-right flex flex-col items-end gap-1">
                         <p className={`text-base font-black ${isIncome ? 'text-blue-500' : 'text-gray-800'}`}>{isIncome ? '+' : '-'} {transaction.amount.toLocaleString('vi-VN')}</p>
