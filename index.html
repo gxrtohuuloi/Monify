@@ -38,7 +38,8 @@
                         "lg": "1rem",
                         "xl": "1.5rem",
                         "2xl": "2rem",
-                        "3xl": "3rem", // Increased border radius
+                        "3xl": "3rem",
+                        "4xl": "4rem",
                         "full": "9999px"
                     },
                     animation: {
@@ -46,6 +47,7 @@
                         'fade-in-up': 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'shimmer': 'shimmer 2s linear infinite',
+                        'liquid-pulse': 'liquidPulse 4s ease-in-out infinite',
                     },
                     keyframes: {
                         blob: {
@@ -61,6 +63,10 @@
                         shimmer: {
                             '0%': { backgroundPosition: '200% 0' },
                             '100%': { backgroundPosition: '-200% 0' }
+                        },
+                        liquidPulse: {
+                            '0%, 100%': { boxShadow: '0 0 0 0px rgba(59, 130, 246, 0.1)' },
+                            '50%': { boxShadow: '0 0 0 10px rgba(59, 130, 246, 0)' }
                         }
                     }
                 },
@@ -72,86 +78,82 @@
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
         
-        /* HIDE SCROLLBARS GLOBALLY BUT KEEP FUNCTIONALITY */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* PREMIUM LIQUID GLASS BACKGROUND - CLEAN VERSION */
+        /* ULTRA PREMIUM LIQUID GLASS EFFECT */
         .liquid-bg {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            background: #f8fafc; /* Very light clean background */
+            background: #f8fafc;
             overflow: hidden;
         }
-        .dark .liquid-bg {
-            background: #0f172a;
-        }
+        .dark .liquid-bg { background: #0f172a; }
 
         .blob-cont {
             position: absolute; inset: 0; width: 100%; height: 100%;
-            filter: blur(80px); /* Reduced blur slightly for cleaner shapes */
-            z-index: -1;
-            pointer-events: none;
-            transform: translateZ(0);
+            filter: blur(90px);
+            z-index: -1; pointer-events: none; transform: translateZ(0);
         }
 
         .blob {
-            position: absolute;
-            border-radius: 50%;
-            animation: blob-float 15s infinite ease-in-out alternate;
-            opacity: 0.6; /* More subtle opacity */
+            position: absolute; border-radius: 50%;
+            animation: blob-float 20s infinite ease-in-out alternate;
+            opacity: 0.7;
         }
 
-        /* Cleaner, softer colors for blobs */
-        .light .blob-1 { background: #e0f2fe; width: 600px; height: 600px; top: -10%; left: -10%; } /* Light Sky */
-        .light .blob-2 { background: #f0fdf4; width: 500px; height: 500px; top: 20%; right: -10%; } /* Light Green */
-        .light .blob-3 { background: #fdf4ff; width: 400px; height: 400px; bottom: -10%; left: 30%; } /* Light Fuchsia */
+        .light .blob-1 { background: #dbeafe; width: 600px; height: 600px; top: -10%; left: -10%; }
+        .light .blob-2 { background: #dcfce7; width: 500px; height: 500px; top: 20%; right: -10%; }
+        .light .blob-3 { background: #f3e8ff; width: 450px; height: 450px; bottom: -10%; left: 30%; }
         
-        .dark .blob { mix-blend-mode: screen; opacity: 0.15; }
+        /* THE GLASS PANEL */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(60px) saturate(160%);
+            -webkit-backdrop-filter: blur(60px) saturate(160%);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 
+                0 30px 60px -10px rgba(0, 0, 0, 0.08),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 20px 40px rgba(255,255,255,0.7);
+        }
+        
+        /* INNER GLASS ELEMENTS */
+        .glass-inner {
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.4);
+        }
+
+        /* LIQUID BUTTON STYLE */
+        .btn-liquid {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 10px 25px -5px rgba(30, 41, 59, 0.3),
+                inset 0 2px 0 rgba(255,255,255,0.2),
+                inset 0 -2px 0 rgba(0,0,0,0.2);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .btn-liquid:active { transform: scale(0.97); }
+        .btn-liquid::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.1), transparent);
+            pointer-events: none;
+        }
+
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255,255,255,0.05);
+        }
 
         @keyframes blob-float {
             0% { transform: translate(0, 0) scale(1) rotate(0deg); }
             33% { transform: translate(20px, -30px) scale(1.05) rotate(5deg); }
             66% { transform: translate(-15px, 15px) scale(0.95) rotate(-3deg); }
             100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-        }
-
-        /* SUPER PREMIUM GLASS PANEL - LIQUID EFFECT */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(40px) saturate(180%);
-            -webkit-backdrop-filter: blur(40px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 
-                0 20px 50px rgba(0, 0, 0, 0.03),
-                0 1px 3px rgba(0,0,0,0.02),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.5);
-        }
-
-        .dark .glass-panel {
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Button Enhancements */
-        .btn-glass {
-            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
-            border: 1px solid rgba(255,255,255,0.8);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-        }
-        .btn-glass:active {
-            transform: scale(0.98);
-        }
-
-        .input-glass {
-            background: rgba(255, 255, 255, 0.5);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-        }
-        .input-glass:focus {
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
     </style>
 </head>
@@ -223,7 +225,6 @@
         const AVAILABLE_ICONS = ['restaurant', 'cottage', 'fitness_center', 'directions_car', 'shopping_bag', 'shield', 'savings', 'paid', 'school', 'medical_services', 'pets', 'flight', 'local_cafe', 'movie', 'sports_esports', 'work', 'card_giftcard', 'checkroom', 'local_gas_station', 'celebration', 'diamond', 'lunch_dining', 'local_bar', 'train', 'pedal_bike', 'child_care', 'construction', 'music_note'];
 
         const getColorClasses = (color: string) => {
-            // Using lighter backgrounds and softer text for a "cleaner" look
             const map: Record<string, any> = {
                 orange: { bg: 'bg-orange-50 dark:bg-orange-900/30', text: 'text-orange-600 dark:text-orange-400', gradient: 'from-orange-400 to-orange-500', shadow: 'shadow-orange-500/20', border: 'border-orange-100' },
                 blue: { bg: 'bg-blue-50 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', gradient: 'from-blue-400 to-blue-500', shadow: 'shadow-blue-500/20', border: 'border-blue-100' },
@@ -233,6 +234,18 @@
                 purple: { bg: 'bg-purple-50 dark:bg-purple-900/30', text: 'text-purple-600 dark:text-purple-400', gradient: 'from-purple-400 to-purple-500', shadow: 'shadow-purple-500/20', border: 'border-purple-100' },
                 slate: { bg: 'bg-slate-100 dark:bg-slate-800/30', text: 'text-slate-600 dark:text-slate-400', gradient: 'from-slate-400 to-slate-500', shadow: 'shadow-slate-500/20', border: 'border-slate-100' },
                 teal: { bg: 'bg-teal-50 dark:bg-teal-900/30', text: 'text-teal-600 dark:text-teal-400', gradient: 'from-teal-400 to-teal-500', shadow: 'shadow-teal-500/20', border: 'border-teal-100' },
+                cyan: { bg: 'bg-cyan-50 dark:bg-cyan-900/30', text: 'text-cyan-600 dark:text-cyan-400', gradient: 'from-cyan-400 to-cyan-500', shadow: 'shadow-cyan-500/20', border: 'border-cyan-100' },
+                amber: { bg: 'bg-amber-50 dark:bg-amber-900/30', text: 'text-amber-600 dark:text-amber-400', gradient: 'from-amber-400 to-amber-500', shadow: 'shadow-amber-500/20', border: 'border-amber-100' },
+                red: { bg: 'bg-red-50 dark:bg-red-900/30', text: 'text-red-600 dark:text-red-400', gradient: 'from-red-400 to-red-500', shadow: 'shadow-red-500/20', border: 'border-red-100' },
+                lime: { bg: 'bg-lime-50 dark:bg-lime-900/30', text: 'text-lime-600 dark:text-lime-400', gradient: 'from-lime-400 to-lime-500', shadow: 'shadow-lime-500/20', border: 'border-lime-100' },
+                green: { bg: 'bg-green-50 dark:bg-green-900/30', text: 'text-green-600 dark:text-green-400', gradient: 'from-green-400 to-green-500', shadow: 'shadow-green-500/20', border: 'border-green-100' },
+                sky: { bg: 'bg-sky-50 dark:bg-sky-900/30', text: 'text-sky-600 dark:text-sky-400', gradient: 'from-sky-400 to-sky-500', shadow: 'shadow-sky-500/20', border: 'border-sky-100' },
+                violet: { bg: 'bg-violet-50 dark:bg-violet-900/30', text: 'text-violet-600 dark:text-violet-400', gradient: 'from-violet-400 to-violet-500', shadow: 'shadow-violet-500/20', border: 'border-violet-100' },
+                fuchsia: { bg: 'bg-fuchsia-50 dark:bg-fuchsia-900/30', text: 'text-fuchsia-600 dark:text-fuchsia-400', gradient: 'from-fuchsia-400 to-fuchsia-500', shadow: 'shadow-fuchsia-500/20', border: 'border-fuchsia-100' },
+                pink: { bg: 'bg-pink-50 dark:bg-pink-900/30', text: 'text-pink-600 dark:text-pink-400', gradient: 'from-pink-400 to-pink-500', shadow: 'shadow-pink-500/20', border: 'border-pink-100' },
+                stone: { bg: 'bg-stone-50 dark:bg-stone-900/30', text: 'text-stone-600 dark:text-stone-400', gradient: 'from-stone-400 to-stone-500', shadow: 'shadow-stone-500/20', border: 'border-stone-100' },
+                neutral: { bg: 'bg-neutral-50 dark:bg-neutral-900/30', text: 'text-neutral-600 dark:text-neutral-400', gradient: 'from-neutral-400 to-neutral-500', shadow: 'shadow-neutral-500/20', border: 'border-neutral-100' },
+                zinc: { bg: 'bg-zinc-50 dark:bg-zinc-900/30', text: 'text-zinc-600 dark:text-zinc-400', gradient: 'from-zinc-400 to-zinc-500', shadow: 'shadow-zinc-500/20', border: 'border-zinc-100' }
             };
             return map[color] || map['slate'];
         };
@@ -351,13 +364,13 @@
                                     value={tempPhone} 
                                     onChange={(e) => setTempPhone(e.target.value)} 
                                     placeholder="0912345678"
-                                    className="w-full text-center text-xl font-bold p-4 rounded-[2rem] bg-gray-50 border border-gray-100 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all placeholder:text-gray-300 text-gray-700"
+                                    className="w-full text-center text-xl font-bold p-4 rounded-[2rem] bg-gray-50 border border-gray-100 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all placeholder:text-gray-300 text-gray-700 shadow-inner"
                                 />
                             </div>
                             
                             <button 
                                 onClick={() => { setPhoneNumber(tempPhone); onClose(); }}
-                                className="w-full py-4 rounded-[2rem] bg-gray-900 text-white font-bold shadow-lg hover:bg-black transition-all transform hover:scale-[1.02]"
+                                className="w-full py-4 rounded-[2rem] btn-liquid font-bold shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02]"
                             >
                                 Xác nhận
                             </button>
@@ -388,11 +401,13 @@
             };
             const currentStatus = statusConfig[syncStatus] || statusConfig.error;
 
+            const hasPhone = phoneNumber && phoneNumber.trim().length > 0;
+
             return (
                 <header className="sticky top-0 z-50 px-4 py-4 mx-auto w-full max-w-[1280px]">
                     <div className="flex items-center justify-between w-full">
                         <div className="flex-shrink-0">
-                            <div className="glass-panel rounded-full p-2 pr-6 flex items-center gap-3 shadow-sm border-white/60">
+                            <div className="glass-panel rounded-[2rem] p-2 pr-6 flex items-center gap-3 shadow-sm border-white/60 hover:scale-[1.02] transition-transform duration-300">
                                 <div className="size-10 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30 relative overflow-hidden shrink-0 ring-2 ring-white/50">
                                     <span className="material-symbols-outlined text-[24px]">account_balance_wallet</span>
                                 </div>
@@ -411,9 +426,9 @@
                                 onClick={onOpenUserModal}
                                 className="glass-panel size-12 rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-all hover:scale-105 active:scale-95 group relative border-white/70"
                             >
-                                {phoneNumber ? (
-                                    <div className="size-full rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-600 font-bold text-sm">
-                                        {phoneNumber.slice(-2)}
+                                {hasPhone ? (
+                                    <div className="size-full rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm border border-white/20 shadow-inner">
+                                        {phoneNumber.trim().slice(-2)}
                                     </div>
                                 ) : (
                                     <span className="material-symbols-outlined text-gray-500 group-hover:text-blue-500 transition-colors">person</span>
@@ -540,34 +555,38 @@
 
             const displayValue = amount ? parseInt(amount).toLocaleString('vi-VN') : '';
             const filteredCategories = categories.filter(c => c.type === (type === 'Thu' ? 'Income' : 'Expense'));
+            
+            // Refined dynamic font sizing based on length to prevent overflow
+            const valLen = displayValue.length;
+            const fontSize = valLen > 13 ? 'text-xl' : valLen > 10 ? 'text-2xl' : valLen > 7 ? 'text-3xl' : valLen > 4 ? 'text-4xl' : 'text-5xl';
 
             return (
-                <div className="glass-panel rounded-[3rem] p-8 flex flex-col gap-8 transition-all duration-500 hover:shadow-2xl relative z-20 bg-white/80">
+                <div className="glass-panel rounded-[3.5rem] p-6 md:p-8 flex flex-col gap-6 md:gap-8 transition-all duration-500 hover:shadow-2xl relative z-20">
                     <div className="flex w-full">
-                        <div className="flex h-16 w-full items-center justify-center rounded-[2rem] bg-gray-100/80 p-1.5 border border-white/50 shadow-inner">
-                            <label className={`flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-[1.7rem] px-2 text-sm font-bold transition-all duration-300 ${type === 'Thu' ? 'bg-white shadow-md text-blue-600' : 'text-gray-500 hover:bg-white/40'}`}>
+                        <div className="flex h-16 w-full items-center justify-center rounded-[2rem] bg-gray-100/60 p-1.5 border border-white/50 shadow-inner backdrop-blur-sm">
+                            <label className={`flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-[1.7rem] px-2 text-sm font-bold transition-all duration-300 ${type === 'Thu' ? 'bg-white shadow-md text-blue-600 scale-[1.02]' : 'text-gray-500 hover:bg-white/40'}`}>
                                 <span className="truncate">Thu Nhập</span>
                                 <input className="invisible w-0 absolute" name="transaction_type" type="radio" checked={type === 'Thu'} onChange={() => setType('Thu')} />
                             </label>
-                            <label className={`flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-[1.7rem] px-2 text-sm font-bold transition-all duration-300 ${type === 'Chi' ? 'bg-white shadow-md text-rose-500' : 'text-gray-500 hover:bg-white/40'}`}>
+                            <label className={`flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-[1.7rem] px-2 text-sm font-bold transition-all duration-300 ${type === 'Chi' ? 'bg-white shadow-md text-rose-500 scale-[1.02]' : 'text-gray-500 hover:bg-white/40'}`}>
                                 <span className="truncate">Chi Tiêu</span>
                                 <input className="invisible w-0 absolute" name="transaction_type" type="radio" checked={type === 'Chi'} onChange={() => setType('Chi')} />
                             </label>
                         </div>
                     </div>
                     
-                    <div className="relative group px-4 text-center">
-                        <div className="relative h-24 w-full cursor-text flex items-center justify-center" onClick={() => inputRef.current?.focus()}>
-                            <div className="flex items-baseline gap-2">
-                                <span className={`text-6xl font-black tracking-tighter transition-colors select-none ${amount ? 'text-gray-800' : 'text-gray-300'}`}>
+                    <div className="relative group px-2 text-center">
+                        <div className="relative h-28 w-full cursor-text flex items-center justify-center glass-inner rounded-[2.5rem]" onClick={() => inputRef.current?.focus()}>
+                            <div className="flex items-baseline gap-1 max-w-full justify-center px-10 relative z-10">
+                                <span className={`${fontSize} font-black tracking-tighter transition-all duration-300 select-none ${amount ? 'text-gray-800 drop-shadow-sm' : 'text-gray-300'} truncate`}>
                                     {amount ? displayValue : '0'}
                                 </span>
-                                <span className="text-xl font-bold text-gray-400">đ</span>
+                                <span className="text-xl font-bold text-gray-400 shrink-0">đ</span>
                             </div>
-                            {isFocused && <span className="absolute h-12 w-1 bg-blue-500 ml-[calc(100%+10px)] animate-pulse rounded-full"></span>}
+                            {isFocused && <span className="absolute h-16 w-1 bg-blue-500 ml-[calc(100%+10px)] animate-liquid-pulse rounded-full blur-[1px]"></span>}
                             <input ref={inputRef} className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-text" type="tel" inputMode="numeric" pattern="[0-9]*" autoComplete="off" value={amount} onChange={handleAmountChange} onKeyDown={handleKeyDown} onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)} />
                             {amount && (
-                                <button onClick={(e) => { e.stopPropagation(); setAmount(''); inputRef.current?.focus(); }} className="absolute right-0 top-1/2 -translate-y-1/2 size-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors">
+                                <button onClick={(e) => { e.stopPropagation(); setAmount(''); inputRef.current?.focus(); }} className="absolute right-4 top-1/2 -translate-y-1/2 size-10 rounded-full bg-white/50 flex items-center justify-center text-gray-400 hover:bg-white hover:text-red-500 transition-all z-20 shadow-sm">
                                     <span className="material-symbols-outlined text-sm">close</span>
                                 </button>
                             )}
@@ -577,7 +596,7 @@
                     <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
                         <div className="flex justify-between items-center mb-4 ml-1">
                             <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">Danh mục</label>
-                            <button onClick={() => { resetForm(); setIsManageModalOpen(true); }} className="text-xs font-bold text-blue-500 hover:text-blue-700 flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded-xl transition-colors">
+                            <button onClick={() => { resetForm(); setIsManageModalOpen(true); }} className="text-xs font-bold text-blue-500 hover:text-blue-700 flex items-center gap-1 bg-blue-50/50 px-3 py-1.5 rounded-2xl transition-colors hover:bg-blue-100/50">
                                 <span className="material-symbols-outlined text-[14px]">settings</span>Tùy chỉnh
                             </button>
                         </div>
@@ -586,7 +605,7 @@
                             const colors = getColorClasses(cat.color);
                             const isActive = currentCategory === cat.id;
                             return (
-                                <button key={cat.id} onClick={() => setCurrentCategory(cat.id)} className={`flex items-center gap-2 px-5 py-3 rounded-[1.5rem] transition-all duration-300 border ${isActive ? `bg-gray-900 text-white shadow-xl shadow-gray-200 scale-105 border-transparent` : 'bg-white border-gray-100 text-gray-500 hover:bg-gray-50 hover:border-gray-200'}`}>
+                                <button key={cat.id} onClick={() => setCurrentCategory(cat.id)} className={`flex items-center gap-2 px-5 py-3 rounded-[2rem] transition-all duration-300 border ${isActive ? `bg-gray-900 text-white shadow-xl shadow-gray-400/30 scale-105 border-transparent ring-2 ring-white/50` : 'bg-white/70 border-white/50 text-gray-500 hover:bg-white hover:border-white shadow-sm'}`}>
                                     <span className={`material-symbols-outlined text-[20px] ${isActive ? 'text-white' : colors.text}`}>{cat.icon}</span>
                                     <span className="text-sm font-bold font-body capitalize">{cat.name}</span>
                                 </button>
@@ -604,8 +623,8 @@
                                 </div>
                             </>
                         )}
-                        <button onClick={() => setIsDatePickerOpen(!isDatePickerOpen)} className={`w-full bg-white rounded-[2rem] p-3 pr-6 flex items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer select-none group active:scale-95`}>
-                            <div className="size-14 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center">
+                        <button onClick={() => setIsDatePickerOpen(!isDatePickerOpen)} className={`w-full bg-white/70 backdrop-blur-sm rounded-[2.5rem] p-3 pr-6 flex items-center gap-4 border border-white/60 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer select-none group active:scale-95`}>
+                            <div className="size-14 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center shadow-inner">
                                 <span className="material-symbols-outlined text-[26px]">calendar_month</span>
                             </div>
                             <div className="text-left flex-1">
@@ -616,7 +635,7 @@
                     </div>
 
                     <div className="pt-2 mt-auto animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-                        <button onClick={handleSubmit} className="w-full bg-gray-900 text-white font-bold py-5 px-6 rounded-[2rem] shadow-xl shadow-gray-200 transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3">
+                        <button onClick={handleSubmit} className="w-full btn-liquid py-5 px-6 rounded-[2.5rem] shadow-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 font-bold text-lg">
                             <span className="material-symbols-outlined">check_circle</span>
                             Lưu Giao Dịch
                         </button>
@@ -625,37 +644,37 @@
                     {/* Manage Categories Modal */}
                     {isManageModalOpen && (
                         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-white/40 backdrop-blur-md animate-fade-in-up">
-                            <div className="glass-panel w-full max-w-lg rounded-[3rem] p-6 bg-white shadow-2xl relative max-h-[90vh] flex flex-col">
+                            <div className="glass-panel w-full max-w-lg rounded-[3rem] p-6 shadow-2xl relative max-h-[90vh] flex flex-col">
                                 <div className="flex justify-between items-center mb-6">
                                     <h2 className="text-xl font-bold text-gray-800">Quản lý danh mục</h2>
                                     <button onClick={() => setIsManageModalOpen(false)} className="size-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200"><span className="material-symbols-outlined text-gray-600">close</span></button>
                                 </div>
                                 
-                                <div className="bg-gray-50 p-5 rounded-[2rem] mb-6 border border-gray-100 shrink-0">
+                                <div className="bg-gray-50/80 p-5 rounded-[2.5rem] mb-6 border border-white/60 shrink-0 shadow-inner">
                                     <div className="grid grid-cols-2 gap-4 mb-4">
                                         <div className="col-span-2">
-                                            <input type="text" value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder="Tên danh mục..." className="w-full rounded-2xl border-gray-200 bg-white text-sm font-bold p-4 shadow-sm focus:ring-2 focus:ring-blue-100 outline-none" />
+                                            <input type="text" value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder="Tên danh mục..." className="w-full rounded-[1.5rem] border-gray-100 bg-white text-sm font-bold p-4 shadow-sm focus:ring-2 focus:ring-blue-100 outline-none" />
                                         </div>
                                         <div>
-                                            <input type="number" value={newCatLimit} onChange={(e) => setNewCatLimit(e.target.value)} placeholder="Ngân sách..." disabled={type === 'Thu'} className="w-full rounded-2xl border-gray-200 bg-white text-sm font-bold p-4 shadow-sm focus:ring-2 focus:ring-blue-100 outline-none disabled:opacity-50" />
+                                            <input type="number" value={newCatLimit} onChange={(e) => setNewCatLimit(e.target.value)} placeholder="Ngân sách..." disabled={type === 'Thu'} className="w-full rounded-[1.5rem] border-gray-100 bg-white text-sm font-bold p-4 shadow-sm focus:ring-2 focus:ring-blue-100 outline-none disabled:opacity-50" />
                                         </div>
                                         <div className="col-span-2">
                                             <div className="flex flex-wrap gap-2 h-20 overflow-y-auto no-scrollbar p-1">
                                                 {AVAILABLE_ICONS.map(ic => (
-                                                    <button key={ic} onClick={() => setNewCatIcon(ic)} className={`size-10 rounded-xl flex items-center justify-center transition-all ${newCatIcon === ic ? 'bg-gray-900 text-white shadow-lg' : 'bg-white border border-gray-100 hover:bg-gray-100 text-gray-500'}`}><span className="material-symbols-outlined text-[20px]">{ic}</span></button>
+                                                    <button key={ic} onClick={() => setNewCatIcon(ic)} className={`size-10 rounded-2xl flex items-center justify-center transition-all ${newCatIcon === ic ? 'bg-gray-900 text-white shadow-lg' : 'bg-white border border-gray-100 hover:bg-gray-100 text-gray-500'}`}><span className="material-symbols-outlined text-[20px]">{ic}</span></button>
                                                 ))}
                                             </div>
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
-                                        <button onClick={handleSaveCategoryInternal} className="flex-1 bg-blue-500 text-white font-bold py-3 rounded-2xl hover:bg-blue-600 transition-colors shadow-lg shadow-blue-200">{editingId ? 'Cập nhật' : 'Thêm mới'}</button>
-                                        {editingId && <button onClick={resetForm} className="px-6 bg-gray-200 text-gray-600 font-bold rounded-2xl hover:bg-gray-300">Hủy</button>}
+                                        <button onClick={handleSaveCategoryInternal} className="flex-1 bg-blue-500 text-white font-bold py-3 rounded-[1.5rem] hover:bg-blue-600 transition-colors shadow-lg shadow-blue-200">{editingId ? 'Cập nhật' : 'Thêm mới'}</button>
+                                        {editingId && <button onClick={resetForm} className="px-6 bg-gray-200 text-gray-600 font-bold rounded-[1.5rem] hover:bg-gray-300">Hủy</button>}
                                     </div>
                                 </div>
 
                                 <div className="space-y-2 overflow-y-auto no-scrollbar flex-1 pr-1">
                                     {filteredCategories.map(cat => (
-                                        <div key={cat.id} className="flex items-center justify-between p-3 rounded-[1.5rem] bg-white border border-gray-50 group hover:shadow-md transition-all">
+                                        <div key={cat.id} className="flex items-center justify-between p-3 rounded-[2rem] bg-white/80 border border-white/50 group hover:shadow-md transition-all">
                                             <div className="flex items-center gap-4 pl-2">
                                                 <div className={`size-10 rounded-full flex items-center justify-center ${getColorClasses(cat.color).bg} ${getColorClasses(cat.color).text}`}><span className="material-symbols-outlined text-[20px]">{cat.icon}</span></div>
                                                 <div><p className="text-sm font-bold text-gray-700 capitalize">{cat.name}</p></div>
@@ -678,46 +697,79 @@
             const [isMounted, setIsMounted] = useState(false);
             useEffect(() => setIsMounted(true), []);
 
+            const categorySpending = useMemo(() => {
+                const spending = {};
+                const expenseCats = categories.filter(c => c.type === 'Expense');
+                const catMap = {};
+                const catNameMap = {};
+                
+                expenseCats.forEach(c => {
+                    catMap[c.id] = c;
+                    if (c.name) catNameMap[c.name.toLowerCase().trim()] = c;
+                });
+
+                transactions.forEach(t => {
+                    if (t.type !== 'Expense') return;
+                    let targetId = null;
+                    if (t.categoryId && catMap[t.categoryId]) {
+                        targetId = t.categoryId;
+                    } else if (t.category && catNameMap[t.category.toLowerCase().trim()]) {
+                        targetId = catNameMap[t.category.toLowerCase().trim()].id;
+                    }
+                    
+                    if (targetId) {
+                        spending[targetId] = (spending[targetId] || 0) + t.amount;
+                    }
+                });
+                return spending;
+            }, [transactions, categories]);
+
             const budgets = categories
                 .filter(c => c.type === 'Expense')
                 .map(category => {
-                    const totalSpent = transactions
-                        .filter(t => (t.categoryId === category.id || t.category === category.name) && t.type === 'Expense')
-                        .reduce((sum, t) => sum + t.amount, 0);
-                    return { ...category, spent: totalSpent, limit: category.limit || 0 };
+                    const totalSpent = categorySpending[category.id] || 0;
+                    return { ...category, spent: totalSpent, limit: Number(category.limit) || 0 };
                 });
             const formatCurrency = (val) => val.toLocaleString('vi-VN');
             
             return (
-                <div className="glass-panel rounded-[3rem] p-8 border-white/60 transition-all duration-300 hover:shadow-xl bg-white/60">
+                <div className="glass-panel rounded-[3rem] p-8 border-white/60 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                     <div className="flex items-center justify-between mb-8">
                         <h3 className="text-lg font-bold text-gray-800">Ngân sách dự kiến</h3>
                     </div>
                     {budgets.length === 0 ? (
                         <p className="text-sm text-gray-400 text-center py-4">Chưa có danh mục chi tiêu.</p>
                     ) : (
-                        <div className="space-y-7">
+                        <div className="space-y-6">
                             {budgets.map((budget) => {
-                                const limit = budget.limit > 0 ? budget.limit : 1;
-                                const percentage = Math.min((budget.spent / limit) * 100, 100);
+                                const limit = budget.limit;
+                                const percentage = limit > 0 
+                                    ? Math.min((budget.spent / limit) * 100, 100) 
+                                    : (budget.spent > 0 ? 100 : 0);
+
                                 const colors = getColorClasses(budget.color);
-                                const isOverBudget = budget.spent > limit && budget.limit > 0;
-                                const barGradient = isOverBudget ? 'from-red-400 to-red-500' : colors.gradient;
+                                const isOverBudget = limit > 0 && budget.spent > limit;
+                                
+                                // Always use category color for the bar, regardless of overspending status
+                                const barGradient = colors.gradient;
                                 
                                 return (
                                     <div key={budget.id} className="group">
-                                        <div className="flex justify-between items-end mb-3">
-                                            <div className="flex items-center gap-4">
-                                                <div className={`p-2.5 rounded-2xl ${colors.bg} ${colors.text} transition-transform group-hover:scale-110`}><span className="material-symbols-outlined text-[20px]">{budget.icon}</span></div>
+                                        <div className="flex justify-between items-end mb-2">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`p-2 rounded-xl ${colors.bg} ${colors.text} transition-transform group-hover:scale-110 shadow-sm`}><span className="material-symbols-outlined text-[18px]">{budget.icon}</span></div>
                                                 <span className="text-sm font-bold text-gray-700 capitalize">{budget.name}</span>
                                             </div>
                                             <div className="text-xs font-medium text-gray-500">
                                                 <span className={`${isOverBudget ? 'text-red-500' : 'text-gray-900'} font-bold text-sm`}>{formatCurrency(budget.spent)}</span>
-                                                {budget.limit > 0 && (<><span className="opacity-40 mx-1.5">/</span>{formatCurrency(budget.limit)}</>)}
+                                                {limit > 0 && (<><span className="opacity-40 mx-1.5">/</span>{formatCurrency(limit)}</>)}
                                             </div>
                                         </div>
-                                        <div className="w-full bg-gray-100 rounded-full h-4 overflow-hidden shadow-inner relative">
-                                            <div className={`absolute top-0 left-0 h-full rounded-full shadow-sm transition-all duration-1000 ease-out bg-gradient-to-r ${barGradient}`} style={{ width: isMounted && budget.limit > 0 ? `${percentage}%` : '0%' }}></div>
+                                        <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden shadow-inner border border-white/50 relative">
+                                            <div className={`absolute top-0 left-0 h-full rounded-full shadow-sm transition-all duration-1000 ease-out bg-gradient-to-r ${barGradient}`} style={{ width: isMounted ? `${percentage}%` : '0%' }}>
+                                                {/* Subtle shine effect top */}
+                                                <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/40 to-transparent"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 );
@@ -751,7 +803,7 @@
             const btnState = canRollover ? 'active' : (rolloverState.isDone ? 'done' : 'inactive');
 
             return (
-                <div className="glass-panel rounded-[3rem] p-6 shadow-xl relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/70">
+                <div className="glass-panel rounded-[3rem] p-6 shadow-xl relative overflow-hidden transition-all duration-300 hover:shadow-2xl">
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-3">
                             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest hidden md:block">TỔNG QUAN</h3>
@@ -767,30 +819,43 @@
                                 </div>
                             </button>
                         </div>
-                        <button onClick={onOpenStats} className="size-10 rounded-full bg-white hover:bg-gray-50 text-gray-400 hover:text-blue-500 transition-all shadow-sm border border-gray-100 flex items-center justify-center">
+                        <button onClick={onOpenStats} className="size-10 rounded-full bg-white/80 hover:bg-white text-gray-400 hover:text-blue-500 transition-all shadow-sm border border-white/60 flex items-center justify-center hover:scale-110">
                             <span className="material-symbols-outlined text-[20px]">bar_chart</span>
                         </button>
                     </div>
                     
                     <div className="grid grid-cols-3 gap-3 mb-6">
-                        <div className="rounded-[2rem] bg-blue-50 p-4 border border-blue-100 flex flex-col justify-between h-28 group hover:bg-blue-100 transition-colors">
-                            <span className="text-[10px] font-extrabold text-blue-400 uppercase tracking-wider">Tổng Thu</span>
-                            <p className="text-xl md:text-2xl font-black text-blue-600 tracking-tighter">{formatLargeNumber(totalIncome)}</p>
+                        <div className="glass-inner rounded-[2rem] p-4 flex flex-col justify-between h-32 group hover:bg-blue-50/50 transition-colors">
+                            <div className="size-8 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center mb-1"><span className="material-symbols-outlined text-[18px]">arrow_downward</span></div>
+                            <div>
+                                <span className="text-[10px] font-extrabold text-blue-400 uppercase tracking-wider">Tổng Thu</span>
+                                <p className="text-lg md:text-xl font-black text-blue-600 tracking-tighter">{formatLargeNumber(totalIncome)}</p>
+                            </div>
                         </div>
-                        <div className="rounded-[2rem] bg-rose-50 p-4 border border-rose-100 flex flex-col justify-between h-28 group hover:bg-rose-100 transition-colors">
-                            <span className="text-[10px] font-extrabold text-rose-400 uppercase tracking-wider">Tổng Chi</span>
-                            <p className="text-xl md:text-2xl font-black text-rose-500 tracking-tighter">{formatLargeNumber(totalExpense)}</p>
+                        <div className="glass-inner rounded-[2rem] p-4 flex flex-col justify-between h-32 group hover:bg-rose-50/50 transition-colors">
+                            <div className="size-8 rounded-full bg-rose-100 text-rose-500 flex items-center justify-center mb-1"><span className="material-symbols-outlined text-[18px]">arrow_upward</span></div>
+                            <div>
+                                <span className="text-[10px] font-extrabold text-rose-400 uppercase tracking-wider">Tổng Chi</span>
+                                <p className="text-lg md:text-xl font-black text-rose-500 tracking-tighter">{formatLargeNumber(totalExpense)}</p>
+                            </div>
                         </div>
-                        <div className={`rounded-[2rem] p-4 border flex flex-col justify-between h-28 ${currentBalance >= 0 ? 'bg-emerald-50 border-emerald-100' : 'bg-red-50 border-red-100'}`}>
-                            <span className={`text-[10px] font-extrabold uppercase tracking-wider ${currentBalance >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>Số Dư</span>
-                            <p className={`text-xl md:text-2xl font-black tracking-tighter ${currentBalance >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>{formatLargeNumber(currentBalance)}</p>
+                        <div className="glass-inner rounded-[2rem] p-4 flex flex-col justify-between h-32 group hover:bg-gray-50/50 transition-colors">
+                            <div className={`size-8 rounded-full flex items-center justify-center mb-1 ${currentBalance >= 0 ? 'bg-emerald-100 text-emerald-500' : 'bg-red-100 text-red-500'}`}><span className="material-symbols-outlined text-[18px]">account_balance</span></div>
+                            <div>
+                                <span className={`text-[10px] font-extrabold uppercase tracking-wider ${currentBalance >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>Số Dư</span>
+                                <p className={`text-lg md:text-xl font-black tracking-tighter ${currentBalance >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>{formatLargeNumber(currentBalance)}</p>
+                            </div>
                         </div>
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <div className="relative h-4 w-full bg-gray-100 rounded-full overflow-hidden flex shadow-inner">
-                            <div className="h-full bg-blue-500 shadow-sm transition-all duration-1000 ease-out" style={{ width: isMounted ? `${incomePct}%` : '0%' }}></div>
-                            <div className="h-full bg-rose-500 shadow-sm transition-all duration-1000 ease-out" style={{ width: isMounted ? `${expensePct}%` : '0%' }}></div>
+                        <div className="relative h-6 w-full bg-white/30 rounded-full p-1 flex shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)] border border-white/50 backdrop-blur-sm overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-blue-400 to-blue-500 shadow-sm relative transition-all duration-1000 ease-out first:rounded-l-full last:rounded-r-full" style={{ width: isMounted ? `${incomePct}%` : '0%' }}>
+                                <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/50 to-transparent"></div>
+                            </div>
+                            <div className="h-full bg-gradient-to-r from-rose-400 to-rose-500 shadow-sm relative transition-all duration-1000 ease-out first:rounded-l-full last:rounded-r-full" style={{ width: isMounted ? `${expensePct}%` : '0%' }}>
+                                <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/50 to-transparent"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -804,8 +869,8 @@
             else if (isIncome) { bgIcon = 'bg-blue-50'; textIcon = 'text-blue-500'; iconName = 'paid'; }
             
             return (
-                <div className="px-2 py-4 flex items-center gap-4 hover:bg-white/60 rounded-[1.5rem] transition-all duration-300 cursor-pointer group/item border border-transparent hover:border-white hover:shadow-sm">
-                    <div className={`size-12 rounded-[1rem] ${bgIcon} ${textIcon} flex items-center justify-center shrink-0 shadow-sm`}>
+                <div className="px-3 py-4 flex items-center gap-4 hover:bg-white/60 rounded-[2rem] transition-all duration-300 cursor-pointer group/item border border-transparent hover:border-white hover:shadow-md">
+                    <div className={`size-12 rounded-[1.2rem] ${bgIcon} ${textIcon} flex items-center justify-center shrink-0 shadow-sm`}>
                         <span className="material-symbols-outlined text-[22px]">{iconName}</span>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -826,7 +891,7 @@
             const displayDate = new Date(selectedDate).toLocaleDateString('vi-VN', { year: 'numeric', month: 'numeric', day: 'numeric' });
 
             return (
-                <div className="glass-panel rounded-[3rem] flex-1 flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl min-h-[400px] bg-white/50">
+                <div className="glass-panel rounded-[3rem] flex-1 flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl min-h-[400px]">
                     <div className="p-6 pb-2 flex justify-between items-center sticky top-0 z-10">
                         <h3 className="text-lg font-bold text-gray-800">Lịch sử</h3>
                         <div className="relative">
@@ -875,46 +940,69 @@
 
             const stats = useMemo(() => {
                 const filtered = transactions.filter(t => t.type === view);
-                const total = filtered.reduce((sum, t) => sum + t.amount, 0);
+                
+                const catMap = categories.reduce((acc, c) => { acc[c.id] = c; return acc; }, {});
+                const catNameMap = categories
+                    .filter(c => c.type === view)
+                    .reduce((acc, c) => { 
+                        if (c.name) acc[c.name.toLowerCase().trim()] = c; 
+                        return acc; 
+                    }, {});
+
                 const grouped = filtered.reduce((acc, t) => {
-                    const catId = t.categoryId || t.category;
-                    if (!acc[catId]) {
-                        const catInfo = categories.find(c => c.id === t.categoryId || c.name === t.category) || { name: t.category, color: 'slate', icon: 'paid', limit: 0, type: view };
-                        acc[catId] = { ...catInfo, amount: 0 };
+                    let catInfo = null;
+                    if (t.categoryId && catMap[t.categoryId]) {
+                        catInfo = catMap[t.categoryId];
+                    } else if (t.category && catNameMap[t.category.toLowerCase().trim()]) {
+                        catInfo = catNameMap[t.category.toLowerCase().trim()];
                     }
-                    acc[catId].amount += t.amount;
+
+                    const key = catInfo ? catInfo.id : t.category;
+
+                    if (!acc[key]) {
+                        acc[key] = {
+                            name: catInfo ? catInfo.name : t.category,
+                            icon: catInfo ? catInfo.icon : 'paid',
+                            color: catInfo ? catInfo.color : 'slate',
+                            amount: 0
+                        };
+                    }
+                    acc[key].amount += t.amount;
                     return acc;
                 }, {});
-                return { total, list: Object.values(grouped).sort((a, b) => b.amount - a.amount) };
+
+                const list = Object.values(grouped).sort((a, b) => b.amount - a.amount);
+                const total = list.reduce((sum, item) => sum + item.amount, 0);
+
+                return { total, list };
             }, [transactions, categories, view]);
             
             return (
                 <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-white/40 backdrop-blur-md animate-fade-in-up">
-                    <div className="bg-white w-full md:max-w-lg md:rounded-[3rem] rounded-t-[3rem] p-8 shadow-2xl h-[90vh] md:h-[80vh] flex flex-col border border-gray-100">
+                    <div className="glass-panel w-full md:max-w-lg md:rounded-[3rem] rounded-t-[3rem] p-8 shadow-2xl h-[90vh] md:h-[80vh] flex flex-col">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-bold text-gray-800">Thống kê</h2>
                             <button onClick={onClose} className="size-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-gray-100"><span className="material-symbols-outlined text-gray-600">close</span></button>
                         </div>
 
-                        {/* Exact Balance Display Section */}
                         <div className="grid grid-cols-3 gap-2 mb-6">
-                            <div className="p-3 bg-blue-50 rounded-2xl border border-blue-100 text-center">
+                            <div className="glass-inner rounded-[2rem] p-3 text-center">
                                 <p className="text-[10px] font-bold text-blue-400 uppercase">Thu</p>
                                 <p className="text-sm font-black text-blue-600 truncate">{overview.income.toLocaleString('vi-VN')}</p>
                             </div>
-                            <div className="p-3 bg-rose-50 rounded-2xl border border-rose-100 text-center">
+                            <div className="glass-inner rounded-[2rem] p-3 text-center">
                                 <p className="text-[10px] font-bold text-rose-400 uppercase">Chi</p>
                                 <p className="text-sm font-black text-rose-600 truncate">{overview.expense.toLocaleString('vi-VN')}</p>
                             </div>
-                            <div className={`p-3 rounded-2xl border text-center ${overview.balance >= 0 ? 'bg-emerald-50 border-emerald-100' : 'bg-gray-50 border-gray-100'}`}>
+                            <div className={`glass-inner rounded-[2rem] p-3 text-center ${overview.balance >= 0 ? 'bg-emerald-50/50' : ''}`}>
                                 <p className={`text-[10px] font-bold uppercase ${overview.balance >= 0 ? 'text-emerald-500' : 'text-gray-500'}`}>Số dư</p>
                                 <p className={`text-sm font-black truncate ${overview.balance >= 0 ? 'text-emerald-700' : 'text-gray-700'}`}>{overview.balance.toLocaleString('vi-VN')}</p>
                             </div>
                         </div>
 
-                        <div className="flex p-1 bg-gray-100 rounded-[1.5rem] mb-6">
-                            <button onClick={() => setView('Expense')} className={`flex-1 py-3 rounded-[1.2rem] text-sm font-bold transition-all ${view === 'Expense' ? 'bg-white shadow-md text-rose-500' : 'text-gray-400'}`}>Chi Tiêu</button>
-                            <button onClick={() => setView('Income')} className={`flex-1 py-3 rounded-[1.2rem] text-sm font-bold transition-all ${view === 'Income' ? 'bg-white shadow-md text-blue-500' : 'text-gray-400'}`}>Thu Nhập</button>
+                        <div className="flex p-1 bg-gray-100/50 rounded-[2rem] mb-6 border border-white/50">
+                            <button onClick={() => setView('Expense')} className={`flex-1 py-3 rounded-[1.8rem] text-sm font-bold transition-all ${view === 'Expense' ? 'bg-white shadow-md text-rose-500 scale-[1.02]' : 'text-gray-400'}`}>Chi Tiêu</button>
+                            <button onClick={() => setView('Income')} className={`flex-1 py-3 rounded-[1.8rem] text-sm font-bold transition-all ${view === 'Income' ? 'bg-white shadow-md text-blue-500 scale-[1.02]' : 'text-gray-400'}`}>Thu Nhập</button>
                         </div>
                         
                         <div className="flex-1 overflow-y-auto no-scrollbar space-y-5 pr-1">
@@ -925,13 +1013,16 @@
                                     <div key={idx} className="relative">
                                         <div className="flex items-center justify-between mb-2">
                                             <div className="flex items-center gap-3">
-                                                <div className={`size-10 rounded-full ${colors.bg} ${colors.text} flex items-center justify-center`}><span className="material-symbols-outlined text-[18px]">{item.icon}</span></div>
+                                                <div className={`size-10 rounded-full ${colors.bg} ${colors.text} flex items-center justify-center shadow-sm`}><span className="material-symbols-outlined text-[18px]">{item.icon}</span></div>
                                                 <div><p className="text-sm font-bold text-gray-700 capitalize">{item.name}</p><p className="text-[10px] text-gray-400 font-bold">{percent.toFixed(1)}%</p></div>
                                             </div>
                                             <p className="text-sm font-bold text-gray-800">{item.amount.toLocaleString('vi-VN')}</p>
                                         </div>
-                                        <div className="h-2 w-full bg-gray-50 rounded-full overflow-hidden">
-                                            <div className={`h-full rounded-full bg-gradient-to-r ${colors.gradient} opacity-80`} style={{ width: `${percent}%` }}></div>
+                                        <div className="w-full bg-white/30 rounded-full h-4 p-0.5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.06)] border border-white/50 backdrop-blur-sm">
+                                            <div className={`h-full rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-all duration-1000 ease-out bg-gradient-to-r ${colors.gradient} relative overflow-hidden`} style={{ width: `${percent}%` }}>
+                                                {/* Liquid highlight top */}
+                                                <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/50 to-transparent"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 )
@@ -944,7 +1035,6 @@
 
         const App = () => {
             const [transactions, setTransactions] = useState([]);
-            // Initialize categories with default first, will sync from DB later
             const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
             const [selectedDate, setSelectedDate] = useState(() => normalizeDate(new Date()));
             const [phoneNumber, setPhoneNumber] = useState(() => localStorage.getItem('monify_user_phone') || '');
@@ -953,7 +1043,6 @@
             const [isUserModalOpen, setIsUserModalOpen] = useState(false);
             const [rolloverState, setRolloverState] = useState({ amount: 0, isDone: false });
 
-            // Calculate Rollover Logic
             const calculateRollover = (allTrans) => {
                 const now = new Date();
                 const currentYear = now.getFullYear();
@@ -1006,35 +1095,30 @@
                 }
             };
 
-            // Main Effect for Transactions and Categories
             useEffect(() => {
                 localStorage.setItem('monify_user_phone', phoneNumber);
                 if (!phoneNumber) { 
                     setSyncStatus('error'); 
                     setTransactions([]); 
-                    setCategories(DEFAULT_CATEGORIES); // Reset to default if no user
+                    setCategories(DEFAULT_CATEGORIES); 
                     return; 
                 }
 
                 setSyncStatus('loading');
                 const userId = formatUserId(phoneNumber);
 
-                // 1. Sync Categories
                 const categoryRef = window.doc(window.db, "categories", userId);
                 const unsubCategories = window.onSnapshot(categoryRef, (docSnap) => {
                     if (docSnap.exists()) {
                         setCategories(docSnap.data().list || DEFAULT_CATEGORIES);
                     } else {
-                        // If no custom categories exist in DB, check local storage or use default
                         const savedLocal = localStorage.getItem('monify_categories');
                         const initialCats = savedLocal ? JSON.parse(savedLocal) : DEFAULT_CATEGORIES;
-                        // Save initial to DB so it syncs next time
                         window.setDoc(categoryRef, { list: initialCats }).catch(console.error);
                         setCategories(initialCats);
                     }
                 });
 
-                // 2. Sync Transactions
                 const q = window.query(
                     window.collection(window.db, "transactions"),
                     window.where("userId", "==", userId)
@@ -1047,7 +1131,14 @@
                     }));
                     data.sort((a, b) => {
                         if (a.date !== b.date) return new Date(b.date) - new Date(a.date);
-                        return b.time.localeCompare(a.time);
+                        try {
+                            const [hA, mA] = a.time.split(':').map(Number);
+                            const [hB, mB] = b.time.split(':').map(Number);
+                            if (hA !== hB) return hB - hA;
+                            return mB - mA;
+                        } catch (e) {
+                            return b.time.localeCompare(a.time);
+                        }
                     });
                     setTransactions(data);
                     setSyncStatus('idle');
@@ -1063,7 +1154,6 @@
                 };
             }, [phoneNumber]);
 
-            // Function to update categories in DB
             const updateCategoriesInDb = async (newCategories) => {
                 if (!phoneNumber) return;
                 const userId = formatUserId(phoneNumber);
@@ -1083,13 +1173,13 @@
                 } else {
                     updatedCategories = [...categories, newCategory];
                 }
-                setCategories(updatedCategories); // Optimistic update
+                setCategories(updatedCategories); 
                 updateCategoriesInDb(updatedCategories);
             };
 
             const handleDeleteCategory = (categoryId) => {
                 const updatedCategories = categories.filter(c => c.id !== categoryId);
-                setCategories(updatedCategories); // Optimistic update
+                setCategories(updatedCategories); 
                 updateCategoriesInDb(updatedCategories);
             }
 
@@ -1120,7 +1210,6 @@
                 }
             }
 
-            // RESET DATA FUNCTION
             const handleResetData = async () => {
                 if (!phoneNumber) return;
                 const confirmReset = confirm("CẢNH BÁO: Bạn có chắc chắn muốn xóa TOÀN BỘ lịch sử giao dịch không?\nHành động này không thể hoàn tác.");
@@ -1129,14 +1218,12 @@
                 const userId = formatUserId(phoneNumber);
                 setSyncStatus('loading');
                 try {
-                    // Query all transactions for this user
                     const q = window.query(
                         window.collection(window.db, "transactions"),
                         window.where("userId", "==", userId)
                     );
                     const snapshot = await window.getDocs(q);
                     
-                    // Delete one by one (or batch if possible, simple loop is fine for this scale)
                     const deletePromises = snapshot.docs.map(doc => window.deleteDoc(doc.ref));
                     await Promise.all(deletePromises);
                     
@@ -1181,7 +1268,7 @@
                                     onSaveCategory={handleSaveCategory}
                                     onDeleteCategory={handleDeleteCategory}
                                 />
-                                <BudgetOverview transactions={transactions} categories={categories} />
+                                <BudgetOverview transactions={currentMonthTrans} categories={categories} />
                             </div>
                             <div className="lg:col-span-5 flex flex-col gap-6 h-full order-2 lg:order-2">
                                 <MonthlySummary 
