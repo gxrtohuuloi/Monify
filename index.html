@@ -676,19 +676,25 @@
                             <>
                                 <div className="fixed inset-0 z-30" onClick={() => setIsDatePickerOpen(false)}></div>
                                 <div className="absolute bottom-full left-0 w-full mb-3 z-40">
-                                    <DateScrollerPopup selectedDate={selectedDate} onSelect={(d) => setSelectedDate(d)} />
+                                    <DateScrollerPopup 
+                                        selectedDate={selectedDate} 
+                                        onSelect={(d) => {
+                                            if (d === selectedDate) {
+                                                setIsDatePickerOpen(false);
+                                            } else {
+                                                setSelectedDate(d);
+                                            }
+                                        }} 
+                                    />
                                 </div>
                             </>
                         )}
-                        <button onClick={() => setIsDatePickerOpen(!isDatePickerOpen)} className={`w-full bg-white/30 backdrop-blur-sm rounded-[2rem] p-3 pr-5 flex items-center gap-4 border border-white/40 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer select-none group active:scale-95`}>
-                            <div className="size-12 rounded-[1.2rem] bg-indigo-50/50 text-indigo-500 flex items-center justify-center shadow-inner">
-                                <span className="material-symbols-outlined text-[24px]">calendar_month</span>
-                            </div>
-                            <div className="text-left flex-1">
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Ngày giao dịch</p>
+                        <button onClick={() => setIsDatePickerOpen(!isDatePickerOpen)} className={`w-full bg-white/30 backdrop-blur-sm rounded-[2rem] p-3 flex flex-col items-center justify-center gap-1 border border-white/40 shadow-sm hover:shadow-md transition-all cursor-pointer select-none group active:scale-95 text-center`}>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ngày giao dịch</p>
+                            <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-[20px] text-indigo-500">calendar_month</span>
                                 <p className="text-lg font-black text-slate-800 tracking-tight">{new Date(selectedDate).toLocaleDateString('vi-VN')}</p>
                             </div>
-                            <span className="material-symbols-outlined text-slate-300">expand_more</span>
                         </button>
                     </div>
 
@@ -997,36 +1003,49 @@
 
             const dailyTotal = filteredTransactions.reduce((acc, t) => t.type === 'Income' ? acc + t.amount : acc - t.amount, 0);
 
+            // Custom date format like "Th 2, 19/1"
+            const dateObj = new Date(selectedDate);
+            const days = ['CN', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7'];
+            const formattedDisplayDate = `${days[dateObj.getDay()]}, ${dateObj.getDate()}/${dateObj.getMonth() + 1}`;
+
             return (
                 <div className="glass-panel rounded-[3rem] flex-1 flex flex-col overflow-hidden transition-all duration-500 hover:shadow-2xl min-h-[500px] relative border border-white/60 bg-white/20 backdrop-blur-xl group">
                     {/* Header */}
-                    <div className="p-6 pb-2 flex justify-between items-end z-20">
-                        <div>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Lịch sử giao dịch</p>
-                            <h3 className="text-2xl font-black text-slate-800 tracking-tighter flex items-center gap-2">
-                                {displayDate}
-                                <span className="size-1.5 rounded-full bg-slate-300"></span>
-                            </h3>
+                    <div className="px-8 py-6 flex justify-between items-center z-20 relative">
+                        <div 
+                            onClick={() => setIsHeaderDateOpen(!isHeaderDateOpen)}
+                            className="cursor-pointer select-none group/date"
+                        >
+                            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 transition-colors group-hover/date:text-blue-500">Lịch sử giao dịch</p>
+                            <div className="flex items-center gap-2">
+                                <h3 className="text-3xl font-black text-slate-800 tracking-tighter group-hover/date:opacity-80 transition-opacity">
+                                    {formattedDisplayDate}
+                                </h3>
+                                <span className="size-2 rounded-full bg-indigo-500 shadow-sm mt-1 animate-pulse-slow"></span>
+                            </div>
                         </div>
                         
-                        <div className="relative">
-                            <button 
-                                onClick={() => setIsHeaderDateOpen(!isHeaderDateOpen)} 
-                                className={`flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-full border transition-all hover:scale-105 active:scale-95 shadow-sm ${dailyTotal >= 0 ? 'bg-blue-50/50 border-blue-100 text-blue-600' : 'bg-red-50/50 border-red-100 text-red-600'}`}
-                            >
-                                <span className="text-sm font-black tracking-tight">{dailyTotal > 0 ? '+' : ''}{dailyTotal.toLocaleString('vi-VN')}</span>
-                                <span className="material-symbols-outlined text-lg">expand_more</span>
-                            </button>
-                            
-                            {isHeaderDateOpen && (
-                                <>
-                                    <div className="fixed inset-0 z-40" onClick={() => setIsHeaderDateOpen(false)}></div>
-                                    <div className="absolute top-full right-0 mt-2 z-50 w-[300px]">
-                                        <DateScrollerPopup selectedDate={selectedDate} onSelect={(d) => { setSelectedDate(d); setIsHeaderDateOpen(false); }} />
-                                    </div>
-                                </>
-                            )}
+                        <div className={`h-10 px-4 rounded-full flex items-center justify-center font-bold text-sm shadow-sm backdrop-blur-md border border-white/40 transition-all ${dailyTotal >= 0 ? 'bg-blue-500 text-white shadow-blue-500/30' : 'bg-red-500 text-white shadow-red-500/30'}`}>
+                            {dailyTotal > 0 ? '+' : ''}{dailyTotal.toLocaleString('vi-VN')}
                         </div>
+                        
+                        {isHeaderDateOpen && (
+                             <>
+                                <div className="fixed inset-0 z-40" onClick={() => setIsHeaderDateOpen(false)}></div>
+                                <div className="absolute top-24 left-6 z-50 w-[85%] max-w-[320px]">
+                                    <DateScrollerPopup 
+                                        selectedDate={selectedDate} 
+                                        onSelect={(d) => {
+                                            if (d === selectedDate) {
+                                                setIsHeaderDateOpen(false);
+                                            } else {
+                                                setSelectedDate(d);
+                                            }
+                                        }} 
+                                    />
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     {/* Content */}
