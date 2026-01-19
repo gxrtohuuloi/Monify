@@ -210,7 +210,7 @@
 
         const AVAILABLE_COLORS = [
             'orange', 'blue', 'indigo', 'rose', 'purple', 'slate', 'cyan', 'amber', 'red', 
-            'sky', 'violet', 'fuchsia', 'pink', 'stone', 'neutral', 'zinc'
+            'sky', 'violet', 'fuchsia', 'pink', 'stone', 'neutral', 'zinc', 'lime', 'emerald', 'teal', 'yellow'
         ];
         
         const AVAILABLE_ICONS = ['restaurant', 'cottage', 'fitness_center', 'directions_car', 'shopping_bag', 'shield', 'savings', 'paid', 'school', 'medical_services', 'pets', 'flight', 'local_cafe', 'movie', 'sports_esports', 'work', 'card_giftcard', 'checkroom', 'local_gas_station', 'celebration', 'diamond', 'lunch_dining', 'local_bar', 'train', 'pedal_bike', 'child_care', 'construction', 'music_note'];
@@ -221,7 +221,8 @@
                 rose: '#f43f5e', purple: '#a855f7', slate: '#64748b',
                 cyan: '#06b6d4', amber: '#f59e0b', red: '#ef4444', 
                 sky: '#0ea5e9', violet: '#8b5cf6', fuchsia: '#d946ef',
-                pink: '#ec4899', stone: '#78716c', neutral: '#737373', zinc: '#71717a'
+                pink: '#ec4899', stone: '#78716c', neutral: '#737373', zinc: '#71717a',
+                lime: '#84cc16', emerald: '#10b981', teal: '#14b8a6', yellow: '#eab308'
             };
             return map[color] || '#3b82f6';
         };
@@ -243,7 +244,11 @@
                 pink: { bg: 'bg-pink-100 dark:bg-pink-900/30', text: 'text-pink-600 dark:text-pink-400', gradient: 'from-pink-400 to-pink-500', shadow: 'shadow-pink-500/20', border: 'border-pink-200' },
                 stone: { bg: 'bg-stone-200 dark:bg-stone-900/30', text: 'text-stone-600 dark:text-stone-400', gradient: 'from-stone-400 to-stone-500', shadow: 'shadow-stone-500/20', border: 'border-stone-200' },
                 neutral: { bg: 'bg-neutral-200 dark:bg-neutral-900/30', text: 'text-neutral-600 dark:text-neutral-400', gradient: 'from-neutral-400 to-neutral-500', shadow: 'shadow-neutral-500/20', border: 'border-neutral-200' },
-                zinc: { bg: 'bg-zinc-200 dark:bg-zinc-900/30', text: 'text-zinc-600 dark:text-zinc-400', gradient: 'from-zinc-400 to-zinc-500', shadow: 'shadow-zinc-500/20', border: 'border-zinc-200' }
+                zinc: { bg: 'bg-zinc-200 dark:bg-zinc-900/30', text: 'text-zinc-600 dark:text-zinc-400', gradient: 'from-zinc-400 to-zinc-500', shadow: 'shadow-zinc-500/20', border: 'border-zinc-200' },
+                lime: { bg: 'bg-lime-100 dark:bg-lime-900/30', text: 'text-lime-600 dark:text-lime-400', gradient: 'from-lime-400 to-lime-500', shadow: 'shadow-lime-500/20', border: 'border-lime-200' },
+                emerald: { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-600 dark:text-emerald-400', gradient: 'from-emerald-400 to-emerald-500', shadow: 'shadow-emerald-500/20', border: 'border-emerald-200' },
+                teal: { bg: 'bg-teal-100 dark:bg-teal-900/30', text: 'text-teal-600 dark:text-teal-400', gradient: 'from-teal-400 to-teal-500', shadow: 'shadow-teal-500/20', border: 'border-teal-200' },
+                yellow: { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-600 dark:text-yellow-400', gradient: 'from-yellow-400 to-yellow-500', shadow: 'shadow-yellow-500/20', border: 'border-yellow-200' }
             };
             return map[color] || map['slate'];
         };
@@ -392,47 +397,41 @@
         };
 
         const Header = ({ phoneNumber, setPhoneNumber, syncStatus, onOpenUserModal }) => {
-            const statusConfig = {
-                idle: { color: 'bg-blue-400', text: 'Đã đồng bộ', ring: 'ring-blue-200' },
-                loading: { color: 'bg-amber-400', text: 'Đang lưu...', ring: 'ring-amber-200' },
-                error: { color: 'bg-red-400', text: 'Chưa kết nối', ring: 'ring-red-200' }
-            };
-            const currentStatus = statusConfig[syncStatus] || statusConfig.error;
-
             const hasPhone = phoneNumber && phoneNumber.trim().length > 0;
 
             return (
-                <header className="sticky top-0 z-50 w-full mb-4">
-                    <div className="absolute inset-0 bg-white/30 backdrop-blur-xl border-b border-white/20 shadow-sm transition-all"></div>
-                    <div className="relative z-10 px-4 py-3 mx-auto w-full max-w-[1280px] flex items-center justify-between">
-                        <div className="flex-shrink-0 flex items-center gap-3">
-                            <div className="size-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30 ring-2 ring-white/60">
+                <header className="sticky top-0 z-50 w-full pt-4 px-4 pointer-events-none">
+                    <div className="mx-auto w-full max-w-[1280px] flex items-center justify-between pointer-events-auto">
+                        {/* Left: Brand Icon */}
+                        <div className="flex-shrink-0 group cursor-pointer">
+                             <div className="size-12 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/40 ring-4 ring-white transition-transform duration-300 group-hover:scale-110">
                                 <span className="material-symbols-outlined text-[24px]">account_balance_wallet</span>
                             </div>
-                            <span className="text-xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600 hidden md:block">
-                                Monify
-                            </span>
                         </div>
                         
-                        <div className="flex-shrink-0 ml-auto flex items-center gap-3">
-                            <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/30 border border-white/40 shadow-inner`}>
-                                <div className={`size-2.5 rounded-full ${currentStatus.color} ${syncStatus === 'loading' ? 'animate-pulse' : ''} shadow-sm`}></div>
-                                <span className="text-[10px] font-bold text-gray-500 uppercase">{currentStatus.text}</span>
-                            </div>
-                            
+                        {/* Right: User Avatar */}
+                        <div className="flex-shrink-0">
                             <button 
                                 onClick={onOpenUserModal}
-                                className="size-11 rounded-full flex items-center justify-center shadow-md hover:shadow-xl transition-all hover:scale-105 active:scale-95 group relative border-2 border-white/50 bg-white/30 backdrop-blur-sm"
+                                className="relative size-12 rounded-full shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 ring-4 ring-white group"
                             >
                                 {hasPhone ? (
-                                    <div className="size-full rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-inner">
+                                    <div className="size-full rounded-full bg-gradient-to-tr from-indigo-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-inner">
                                         {phoneNumber.trim().slice(-2)}
                                     </div>
                                 ) : (
-                                    <span className="material-symbols-outlined text-gray-500 group-hover:text-blue-600 transition-colors">person</span>
+                                    <div className="size-full rounded-full bg-white flex items-center justify-center text-slate-400">
+                                         <span className="material-symbols-outlined text-[24px]">person</span>
+                                    </div>
                                 )}
-                                {syncStatus === 'error' && (
-                                    <span className="absolute top-0 right-0 size-3 bg-red-500 rounded-full border-2 border-white"></span>
+                                
+                                {/* Status Indicator */}
+                                {syncStatus !== 'idle' && (
+                                    <span className={`absolute -top-1 -right-1 size-4 rounded-full border-[3px] border-white shadow-sm flex items-center justify-center ${
+                                        syncStatus === 'loading' ? 'bg-amber-400' : 'bg-red-500'
+                                    }`}>
+                                        {syncStatus === 'loading' && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>}
+                                    </span>
                                 )}
                             </button>
                         </div>
@@ -504,6 +503,7 @@
                 }
             };
 
+            // Enhanced logic: Find an available color not used by ANY category
             const getAutoColor = () => {
                 const usedColors = categories.map(c => c.color);
                 const available = AVAILABLE_COLORS.filter(c => !usedColors.includes(c));
@@ -519,6 +519,7 @@
                         ...existing,
                         name: newCatName,
                         icon: newCatIcon,
+                        color: editingColor, // Use selected color
                         limit: newCatLimit ? parseInt(newCatLimit) : 0
                     };
                 } else {
@@ -526,7 +527,7 @@
                         id: Date.now().toString(),
                         name: newCatName,
                         icon: newCatIcon,
-                        color: getAutoColor(),
+                        color: editingColor, // Use selected color
                         type: type === 'Thu' ? 'Income' : 'Expense',
                         limit: newCatLimit ? parseInt(newCatLimit) : 0
                     };
@@ -543,11 +544,19 @@
             };
 
             const handleEditCategory = (cat) => {
-                setNewCatName(cat.name); setNewCatIcon(cat.icon); setNewCatLimit(cat.limit ? cat.limit.toString() : ''); setEditingColor(cat.color); setEditingId(cat.id);
+                setNewCatName(cat.name); 
+                setNewCatIcon(cat.icon); 
+                setNewCatLimit(cat.limit ? cat.limit.toString() : ''); 
+                setEditingColor(cat.color); 
+                setEditingId(cat.id);
             };
 
             const resetForm = () => {
-                setNewCatName(''); setNewCatIcon('paid'); setNewCatLimit(''); setEditingId(null); setEditingColor('blue');
+                setNewCatName(''); 
+                setNewCatIcon('paid'); 
+                setNewCatLimit(''); 
+                setEditingId(null); 
+                setEditingColor(getAutoColor()); // Set a fresh valid color for new category
             };
 
             const displayValue = amount ? parseInt(amount).toLocaleString('vi-VN') : '';
@@ -559,20 +568,36 @@
             const typeColor = type === 'Thu' ? 'text-cyan-500' : 'text-rose-500';
             const typeColorGradient = type === 'Thu' ? 'from-cyan-400 to-blue-600' : 'from-rose-400 to-red-600';
 
+            // Get used colors across ALL categories (not just filtered ones) to strictly enforce global uniqueness
+            const globalUsedColors = categories.filter(c => c.id !== editingId).map(c => c.color);
+
             return (
                 <div className="glass-panel rounded-[3rem] p-6 md:p-8 flex flex-col gap-6 transition-all duration-500 hover:shadow-2xl relative z-20">
                     {/* Toggle Switch */}
-                    <div className="flex w-full">
-                        <div className="flex h-14 w-full items-center justify-center rounded-[2rem] bg-blue-50/40 p-1.5 border border-white/40 shadow-inner backdrop-blur-sm">
-                            <label className={`flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-[1.6rem] px-2 text-sm font-bold transition-all duration-500 ${type === 'Thu' ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-lg shadow-blue-200 scale-100' : 'text-gray-500 hover:bg-white/20'}`}>
-                                <span className="truncate">Thu Nhập</span>
-                                <input className="invisible w-0 absolute" name="transaction_type" type="radio" checked={type === 'Thu'} onChange={() => setType('Thu')} />
-                            </label>
-                            <label className={`flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-[1.6rem] px-2 text-sm font-bold transition-all duration-500 ${type === 'Chi' ? 'bg-gradient-to-r from-rose-400 to-red-500 text-white shadow-lg shadow-rose-200 scale-100' : 'text-gray-500 hover:bg-white/20'}`}>
-                                <span className="truncate">Chi Tiêu</span>
-                                <input className="invisible w-0 absolute" name="transaction_type" type="radio" checked={type === 'Chi'} onChange={() => setType('Chi')} />
-                            </label>
-                        </div>
+                    <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-100/50 rounded-[2.5rem] border border-white/60 shadow-inner backdrop-blur-md">
+                         <button
+                            onClick={() => setType('Thu')}
+                            className={`flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 h-16 md:h-14 rounded-[2rem] text-sm font-black transition-all duration-500 ease-out ${
+                                type === 'Thu'
+                                    ? 'bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 ring-2 ring-white/50 scale-100'
+                                    : 'text-slate-400 hover:bg-white/60 hover:text-slate-600 scale-95 hover:scale-100'
+                            }`}
+                        >
+                            <span className="material-symbols-outlined text-[24px]">trending_up</span>
+                            <span className="uppercase tracking-wide text-[10px] md:text-xs">Thu Nhập</span>
+                        </button>
+                        
+                        <button
+                            onClick={() => setType('Chi')}
+                            className={`flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 h-16 md:h-14 rounded-[2rem] text-sm font-black transition-all duration-500 ease-out ${
+                                type === 'Chi'
+                                    ? 'bg-gradient-to-br from-rose-400 via-red-500 to-red-600 text-white shadow-lg shadow-rose-500/30 ring-2 ring-white/50 scale-100'
+                                    : 'text-slate-400 hover:bg-white/60 hover:text-slate-600 scale-95 hover:scale-100'
+                            }`}
+                        >
+                            <span className="material-symbols-outlined text-[24px]">trending_down</span>
+                            <span className="uppercase tracking-wide text-[10px] md:text-xs">Chi Tiêu</span>
+                        </button>
                     </div>
                     
                     {/* Amount Input */}
@@ -607,25 +632,41 @@
 
                     {/* Categories */}
                     <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-                        <div className="flex justify-between items-center mb-3 ml-1">
-                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Danh mục</label>
-                            <button onClick={() => { resetForm(); setIsManageModalOpen(true); }} className="text-xs font-bold text-blue-500 hover:text-blue-600 flex items-center gap-1 bg-blue-50/50 px-3 py-1.5 rounded-full transition-colors hover:bg-blue-100/50">
-                                <span className="material-symbols-outlined text-[14px]">settings</span>
+                        <div className="flex justify-between items-center mb-3 px-1">
+                            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Danh mục</label>
+                            <button 
+                                onClick={() => { resetForm(); setIsManageModalOpen(true); }} 
+                                className="size-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition-colors shadow-sm"
+                            >
+                                <span className="material-symbols-outlined text-[16px]">settings</span>
                             </button>
                         </div>
-                        <div className="flex flex-wrap gap-2">
-                        {filteredCategories.map((cat) => {
-                            const colors = getColorClasses(cat.color);
-                            const isActive = currentCategory === cat.id;
-                            const activeClass = type === 'Thu' ? 'bg-gradient-to-r from-cyan-500 to-blue-600 shadow-blue-200' : 'bg-gradient-to-r from-slate-700 to-slate-800 shadow-slate-400';
-                            
-                            return (
-                                <button key={cat.id} onClick={() => setCurrentCategory(cat.id)} className={`flex items-center gap-2 px-4 py-2.5 rounded-[1.5rem] transition-all duration-300 border ${isActive ? `${activeClass} text-white shadow-lg scale-105 border-transparent ring-2 ring-white/60` : 'bg-white/30 border-white/30 text-slate-500 hover:bg-white/50 hover:border-white/50 shadow-sm'}`}>
-                                    <span className={`material-symbols-outlined text-[18px] ${isActive ? 'text-white' : colors.text}`}>{cat.icon}</span>
-                                    <span className="text-sm font-bold font-body capitalize">{cat.name}</span>
-                                </button>
-                            )
-                        })}
+                        
+                        <div className="flex flex-wrap gap-3">
+                            {filteredCategories.map((cat) => {
+                                const colors = getColorClasses(cat.color);
+                                const iconColorClass = colors.text.split(' ')[0]; 
+                                const isActive = currentCategory === cat.id;
+                                
+                                return (
+                                    <button 
+                                        key={cat.id} 
+                                        onClick={() => setCurrentCategory(cat.id)} 
+                                        className={`
+                                            relative flex items-center gap-2 px-5 py-3 rounded-[1.2rem] transition-all duration-300 border
+                                            ${isActive 
+                                                ? 'bg-[#1e293b] border-[#1e293b] text-white shadow-lg shadow-slate-500/20 scale-[1.02]' 
+                                                : 'bg-white border-transparent hover:border-blue-100 text-slate-600 shadow-sm hover:shadow-md'
+                                            }
+                                        `}
+                                    >
+                                        <span className={`material-symbols-outlined text-[20px] ${isActive ? 'text-white' : iconColorClass}`}>
+                                            {cat.icon}
+                                        </span>
+                                        <span className="text-sm font-bold whitespace-nowrap">{cat.name}</span>
+                                    </button>
+                                )
+                            })}
                         </div>
                     </div>
 
@@ -676,7 +717,34 @@
                                             <input type="number" value={newCatLimit} onChange={(e) => setNewCatLimit(e.target.value)} placeholder="Ngân sách..." disabled={type === 'Thu'} className="w-full rounded-[1.5rem] border-gray-100 bg-white text-sm font-bold p-4 shadow-sm focus:ring-2 focus:ring-blue-100 outline-none disabled:opacity-50" />
                                         </div>
                                         <div className="col-span-2">
-                                            <div className="flex flex-wrap gap-2 h-20 overflow-y-auto no-scrollbar p-1">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block ml-2">Màu sắc (Bắt buộc khác nhau)</label>
+                                            <div className="flex flex-wrap gap-2 mb-4 p-2 bg-white/50 rounded-[1.5rem] border border-white/50">
+                                                {AVAILABLE_COLORS.map(c => {
+                                                    const isUsed = globalUsedColors.includes(c);
+                                                    const isSelected = editingColor === c;
+                                                    const cClasses = getColorClasses(c);
+                                                    
+                                                    return (
+                                                        <button 
+                                                            key={c}
+                                                            onClick={() => !isUsed && setEditingColor(c)}
+                                                            disabled={isUsed}
+                                                            className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 relative
+                                                                ${isUsed ? 'opacity-20 cursor-not-allowed scale-75 grayscale' : 'hover:scale-110 cursor-pointer'}
+                                                                ${isSelected ? 'ring-2 ring-offset-2 ring-gray-400 scale-110 z-10 shadow-md' : ''}
+                                                                ${cClasses.bg}
+                                                            `}
+                                                            title={isUsed ? "Đã được sử dụng" : c}
+                                                        >
+                                                            {isSelected && <span className="material-symbols-outlined text-[14px] text-gray-700">check</span>}
+                                                            {isUsed && !isSelected && <span className="material-symbols-outlined text-[14px] text-gray-700">block</span>}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                            
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block ml-2">Biểu tượng</label>
+                                            <div className="flex flex-wrap gap-2 h-24 overflow-y-auto no-scrollbar p-1">
                                                 {AVAILABLE_ICONS.map(ic => (
                                                     <button key={ic} onClick={() => setNewCatIcon(ic)} className={`size-10 rounded-2xl flex items-center justify-center transition-all ${newCatIcon === ic ? 'bg-gray-900 text-white shadow-lg' : 'bg-white border border-gray-100 hover:bg-gray-100 text-gray-500'}`}><span className="material-symbols-outlined text-[20px]">{ic}</span></button>
                                                 ))}
@@ -713,6 +781,14 @@
         const BudgetOverview = ({ transactions, categories }) => {
             const [isMounted, setIsMounted] = useState(false);
             useEffect(() => setIsMounted(true), []);
+            
+            // Calculate ACTUAL total spent for the period regardless of category mapping or limits
+            // This ensures consistency with Statistics Modal
+            const totalActualSpent = useMemo(() => {
+                return transactions
+                    .filter(t => t.type === 'Expense')
+                    .reduce((sum, t) => sum + t.amount, 0);
+            }, [transactions]);
 
             const categorySpending = useMemo(() => {
                 const spending = {};
@@ -757,9 +833,9 @@
             };
             
             const totalBudget = budgets.reduce((sum, b) => sum + (b.limit || 0), 0);
-            const totalSpentInBudget = budgets.reduce((sum, b) => sum + (b.limit > 0 ? b.spent : 0), 0);
-            const totalBudgetPercent = totalBudget > 0 ? Math.min((totalSpentInBudget / totalBudget) * 100, 100) : 0;
-            const totalRemaining = totalBudget - totalSpentInBudget;
+            // Use ACTUAL total spent for the global calculations
+            const totalRemaining = totalBudget - totalActualSpent;
+            const totalBudgetPercent = totalBudget > 0 ? Math.min((totalActualSpent / totalBudget) * 100, 100) : (totalActualSpent > 0 ? 100 : 0);
 
             return (
                 <div className="glass-panel rounded-[3rem] p-6 border-white/60 transition-all duration-300 hover:shadow-xl relative overflow-hidden group flex flex-col h-full min-h-[420px]">
@@ -776,7 +852,7 @@
                         <div className="text-right">
                              <div className="flex flex-col items-end">
                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Tổng chi</span>
-                                <span className="text-xl font-black text-slate-800 tracking-tighter">{formatShortCurrency(totalSpentInBudget)}</span>
+                                <span className="text-xl font-black text-slate-800 tracking-tighter">{formatShortCurrency(totalActualSpent)}</span>
                              </div>
                         </div>
                     </div>
@@ -813,6 +889,7 @@
                              const isOver = remaining < 0;
                              const percent = budget.limit > 0 ? (budget.spent / budget.limit) * 100 : 0;
                              const colors = getColorClasses(budget.color);
+                             const hasLimit = budget.limit > 0;
                              
                              return (
                                 <div key={budget.id} className="bg-white/20 hover:bg-white/40 border border-white/30 rounded-[1.8rem] p-3 transition-all duration-300 group/item">
@@ -823,27 +900,33 @@
                                             </div>
                                             <div className="min-w-0">
                                                 <p className="text-sm font-bold text-slate-800 truncate leading-tight">{budget.name}</p>
-                                                <p className="text-[10px] font-bold text-slate-400 mt-0.5">Giới hạn: {formatShortCurrency(budget.limit)}</p>
+                                                <p className="text-[10px] font-bold text-slate-400 mt-0.5">
+                                                    {hasLimit ? `Giới hạn: ${formatShortCurrency(budget.limit)}` : 'Không giới hạn'}
+                                                </p>
                                             </div>
                                         </div>
                                         <div className="text-right shrink-0">
-                                            <p className={`text-sm font-black ${isOver ? 'text-red-500' : 'text-slate-800'}`}>{formatShortCurrency(budget.spent)}</p>
-                                            <p className={`text-[9px] font-bold ${isOver ? 'text-red-400' : 'text-slate-400'} uppercase tracking-wide`}>
-                                                {isOver ? 'Quá hạn' : `${Math.round(percent)}%`}
-                                            </p>
+                                            <p className={`text-sm font-black ${isOver && hasLimit ? 'text-red-500' : 'text-slate-800'}`}>{formatShortCurrency(budget.spent)}</p>
+                                            {hasLimit && (
+                                                <p className={`text-[9px] font-bold ${isOver ? 'text-red-400' : 'text-slate-400'} uppercase tracking-wide`}>
+                                                    {isOver ? 'Quá hạn' : `${Math.round(percent)}%`}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
                                     
-                                    <div className="relative h-2 w-full bg-gray-100 rounded-full overflow-hidden shadow-inner">
-                                        <div 
-                                            className={`absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ${isOver ? 'bg-red-500' : `bg-gradient-to-r ${colors.gradient}`}`} 
-                                            style={{width: isMounted ? `${Math.min(percent, 100)}%` : '0%'}}
-                                        ></div>
-                                    </div>
-                                    {isOver && (
+                                    {hasLimit && (
+                                        <div className="relative h-2 w-full bg-gray-100 rounded-full overflow-hidden shadow-inner">
+                                            <div 
+                                                className={`absolute top-0 left-0 h-full rounded-full transition-all duration-1000 bg-gradient-to-r ${colors.gradient}`} 
+                                                style={{width: isMounted ? `${Math.min(percent, 100)}%` : '0%'}}
+                                            ></div>
+                                        </div>
+                                    )}
+                                    {isOver && hasLimit && (
                                         <div className="mt-1.5 flex items-center gap-1 text-[9px] font-bold text-red-500 animate-pulse">
                                             <span className="material-symbols-outlined text-[10px]">warning</span>
-                                            Vượt quá {formatShortCurrency(Math.abs(remaining))}
+                                            Vượt quá {formatCurrency(Math.abs(remaining))}đ
                                         </div>
                                     )}
                                 </div>
@@ -856,38 +939,51 @@
 
         const TransactionItem = ({ transaction, categoryInfo, onDelete }) => {
             const isIncome = transaction.type === 'Income';
-            let bgIcon = 'bg-gray-100', textIcon = 'text-gray-500', iconName = 'receipt_long';
-            if (categoryInfo) { const colors = getColorClasses(categoryInfo.color); bgIcon = colors.bg; textIcon = colors.text; iconName = categoryInfo.icon; }
-            else if (isIncome) { bgIcon = 'bg-blue-100'; textIcon = 'text-blue-600'; iconName = 'paid'; }
+            let bgIcon = 'bg-slate-100', textIcon = 'text-slate-400', iconName = 'receipt';
+            
+            if (categoryInfo) { 
+                const colors = getColorClasses(categoryInfo.color); 
+                bgIcon = colors.bg; 
+                textIcon = colors.text; 
+                iconName = categoryInfo.icon; 
+            } else if (isIncome) { 
+                bgIcon = 'bg-blue-50/80'; 
+                textIcon = 'text-blue-500'; 
+                iconName = 'paid'; 
+            }
             
             return (
-                <div className="group relative flex items-center gap-4 p-4 mb-3 rounded-[2.5rem] bg-white/30 hover:bg-white/50 border border-white/40 shadow-sm hover:shadow-xl transition-all duration-500 backdrop-blur-md cursor-default hover:-translate-y-0.5">
-                    <div className={`size-14 rounded-[1.8rem] ${bgIcon} ${textIcon} flex items-center justify-center shrink-0 shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] ring-2 ring-white`}>
-                        <span className="material-symbols-outlined text-[26px] drop-shadow-sm">{iconName}</span>
+                <div className="group relative flex items-center p-3 mb-2 rounded-[22px] bg-white/40 hover:bg-white/80 border border-white/50 hover:border-white shadow-sm hover:shadow-lg transition-all duration-300 backdrop-blur-md">
+                     {/* Icon */}
+                    <div className={`size-12 rounded-[18px] ${bgIcon} ${textIcon} flex items-center justify-center shrink-0 shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)] ring-2 ring-white`}>
+                        <span className="material-symbols-outlined text-[24px]">{iconName}</span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-baseline mb-1">
-                             <h4 className="text-base font-bold text-slate-800 truncate pr-2 tracking-tight">{transaction.title}</h4>
-                             <span className="text-[10px] font-bold text-slate-400 shrink-0 bg-white/50 px-2 py-0.5 rounded-full">{transaction.time}</span>
+                    
+                    {/* Info */}
+                    <div className="flex-1 ml-3 min-w-0">
+                        <div className="flex justify-between items-baseline mb-0.5">
+                             <h4 className="text-sm font-bold text-slate-800 truncate leading-tight">{transaction.title}</h4>
+                             <span className={`text-sm font-black tracking-tight ${isIncome ? 'text-blue-500' : 'text-slate-700'}`}>
+                                {isIncome ? '+' : '-'}{transaction.amount.toLocaleString('vi-VN')}
+                             </span>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <p className="text-xs text-slate-500 font-bold truncate capitalize flex items-center gap-1 opacity-80">
-                                {categoryInfo ? categoryInfo.name : transaction.category}
-                            </p>
-                            {transaction.isRollover && <span className="px-2 py-0.5 rounded-lg bg-amber-100/80 text-amber-600 text-[9px] font-bold border border-amber-200">Auto</span>}
-                        </div>
-                    </div>
-                    <div className="text-right pl-2 relative">
-                        <p className={`text-lg font-black tracking-tight ${isIncome ? 'text-blue-600 drop-shadow-sm' : 'text-slate-800'} group-hover:blur-[2px] transition-all duration-300`}>
-                            {isIncome ? '+' : '-'}{transaction.amount.toLocaleString('vi-VN')}
-                        </p>
-                        <div className="absolute inset-y-0 right-0 flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                             <button 
-                                onClick={(e) => { e.stopPropagation(); onDelete(transaction.id); }} 
-                                className="size-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center shadow-lg hover:bg-red-500 hover:text-white hover:scale-110 transition-all duration-300 border-2 border-white"
-                            >
-                                <span className="material-symbols-outlined text-[20px]">delete</span>
-                            </button>
+                        <div className="flex justify-between items-center mt-1">
+                            <div className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-400">
+                                <span className="bg-white/50 px-1.5 py-0.5 rounded-md border border-white/50 shadow-sm">{transaction.time}</span>
+                                {transaction.isRollover && <span className="px-1.5 py-0.5 rounded-md bg-amber-100/50 text-amber-600 border border-amber-200">Auto</span>}
+                                <span className="truncate max-w-[100px] opacity-80">{categoryInfo ? categoryInfo.name : transaction.category}</span>
+                            </div>
+                            
+                            {/* Actions */}
+                            <div className="h-5 flex items-center">
+                                 {/* Only show delete on hover, replaces nothing, just appears */}
+                                 <button 
+                                    onClick={(e) => { e.stopPropagation(); onDelete(transaction.id); }} 
+                                    className="size-7 flex items-center justify-center rounded-full bg-red-100 text-red-500 hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100 scale-50 group-hover:scale-100 shadow-sm"
+                                >
+                                    <span className="material-symbols-outlined text-[16px]">close</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -902,31 +998,31 @@
             const dailyTotal = filteredTransactions.reduce((acc, t) => t.type === 'Income' ? acc + t.amount : acc - t.amount, 0);
 
             return (
-                <div className="glass-panel rounded-[3.5rem] flex-1 flex flex-col overflow-hidden transition-all duration-500 hover:shadow-2xl min-h-[500px] relative border-2 border-white/70 shadow-blue-900/5 group">
-                    {/* Liquid Overlay Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-white/20 pointer-events-none rounded-[3.5rem]"></div>
-
+                <div className="glass-panel rounded-[3rem] flex-1 flex flex-col overflow-hidden transition-all duration-500 hover:shadow-2xl min-h-[500px] relative border border-white/60 bg-white/20 backdrop-blur-xl group">
                     {/* Header */}
-                    <div className="p-6 pb-4 flex justify-between items-center bg-white/20 backdrop-blur-xl z-20 border-b border-white/30 sticky top-0">
+                    <div className="p-6 pb-2 flex justify-between items-end z-20">
                         <div>
-                            <h3 className="text-2xl font-black text-slate-800 tracking-tighter flex items-center gap-3 drop-shadow-sm">
-                                Lịch sử 
-                                <span className="size-7 flex items-center justify-center text-[12px] font-black bg-white text-slate-800 rounded-full shadow-sm border border-slate-100">{filteredTransactions.length}</span>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Lịch sử giao dịch</p>
+                            <h3 className="text-2xl font-black text-slate-800 tracking-tighter flex items-center gap-2">
+                                {displayDate}
+                                <span className="size-1.5 rounded-full bg-slate-300"></span>
                             </h3>
                         </div>
                         
                         <div className="relative">
-                            <button onClick={() => setIsHeaderDateOpen(!isHeaderDateOpen)} className="flex flex-col items-end group/date cursor-pointer p-2 -mr-2 rounded-2xl hover:bg-white/40 transition-all">
-                                <span className="text-xs font-bold text-slate-500 group-hover/date:text-blue-600 transition-colors capitalize bg-white/30 px-3 py-1 rounded-xl border border-white/30 shadow-sm backdrop-blur-sm">{displayDate}</span>
-                                <span className={`text-base font-black mt-1 tracking-tight ${dailyTotal >= 0 ? 'text-blue-600' : 'text-slate-700'}`}>
-                                    {dailyTotal > 0 ? '+' : ''}{dailyTotal.toLocaleString('vi-VN')}
-                                </span>
+                            <button 
+                                onClick={() => setIsHeaderDateOpen(!isHeaderDateOpen)} 
+                                className={`flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-full border transition-all hover:scale-105 active:scale-95 shadow-sm ${dailyTotal >= 0 ? 'bg-blue-50/50 border-blue-100 text-blue-600' : 'bg-red-50/50 border-red-100 text-red-600'}`}
+                            >
+                                <span className="text-sm font-black tracking-tight">{dailyTotal > 0 ? '+' : ''}{dailyTotal.toLocaleString('vi-VN')}</span>
+                                <span className="material-symbols-outlined text-lg">expand_more</span>
                             </button>
+                            
                             {isHeaderDateOpen && (
                                 <>
                                     <div className="fixed inset-0 z-40" onClick={() => setIsHeaderDateOpen(false)}></div>
-                                    <div className="absolute top-full right-0 mt-4 z-50 w-[320px]">
-                                        <DateScrollerPopup selectedDate={selectedDate} onSelect={(d) => { setSelectedDate(d); }} />
+                                    <div className="absolute top-full right-0 mt-2 z-50 w-[300px]">
+                                        <DateScrollerPopup selectedDate={selectedDate} onSelect={(d) => { setSelectedDate(d); setIsHeaderDateOpen(false); }} />
                                     </div>
                                 </>
                             )}
@@ -934,21 +1030,17 @@
                     </div>
 
                     {/* Content */}
-                    <div className="flex-1 overflow-y-auto p-5 scroll-smooth no-scrollbar relative z-10 space-y-3">
+                    <div className="flex-1 overflow-y-auto p-4 scroll-smooth no-scrollbar relative z-10">
                         {filteredTransactions.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center h-full text-slate-300 pb-10 animate-fade-in-up select-none">
-                            <div className="size-32 rounded-[3rem] bg-gradient-to-br from-white/50 to-blue-50/50 border-2 border-white flex items-center justify-center mb-6 shadow-xl relative overflow-hidden">
-                                <div className="absolute inset-0 bg-white/20 backdrop-blur-sm"></div>
-                                <span className="material-symbols-outlined text-6xl opacity-20 text-blue-300 relative z-10">receipt_long</span>
-                                <div className="absolute -bottom-2 -right-2 size-12 rounded-full bg-blue-100/80 flex items-center justify-center border-4 border-white z-20 shadow-md">
-                                    <span className="material-symbols-outlined text-lg text-blue-500 font-bold">add</span>
-                                </div>
+                        <div className="flex flex-col items-center justify-center h-full text-slate-400/60 pb-10 select-none">
+                            <div className="size-24 rounded-full bg-gradient-to-tr from-white/40 to-slate-100/40 border border-white/50 flex items-center justify-center mb-4 shadow-inner">
+                                <span className="material-symbols-outlined text-[40px] font-thin opacity-50">history_edu</span>
                             </div>
-                            <p className="text-base font-black text-slate-300">Chưa có giao dịch</p>
-                            <p className="text-xs font-bold text-slate-300/70 mt-1">Hôm nay ví bạn đang nghỉ ngơi</p>
+                            <p className="text-sm font-bold text-slate-500">Không có giao dịch nào</p>
+                            <p className="text-[10px] font-medium text-slate-400 mt-1">Ngày hôm nay thật bình yên</p>
                         </div>
                         ) : (
-                        <div className="pb-4">
+                        <div className="space-y-1 pb-4">
                             {filteredTransactions.map((t, idx) => {
                                 const cat = categories.find(c => c.id === t.categoryId) || categories.find(c => c.name.toLowerCase() === t.category.toLowerCase());
                                 return (
@@ -962,7 +1054,7 @@
                     </div>
                     
                     {/* Bottom fade for liquid scrolling */}
-                    <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white/80 to-transparent pointer-events-none z-20 rounded-b-[3.5rem] backdrop-blur-[2px]"></div>
+                    <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-white/40 to-transparent pointer-events-none z-20 rounded-b-[3rem]"></div>
                 </div>
             );
         };
@@ -991,78 +1083,74 @@
             return (
                 <div className="flex flex-col gap-5">
                    {/* Main Wallet Card */}
-                   <div className="glass-panel rounded-[3rem] p-1 relative overflow-hidden group transition-all hover:shadow-2xl hover:scale-[1.01]">
-                       <div className="bg-gradient-to-br from-slate-800 to-slate-950 rounded-[2.8rem] p-6 text-white relative overflow-hidden shadow-xl">
-                           {/* Background Effects */}
-                           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/20 rounded-full -mr-16 -mt-32 blur-3xl"></div>
-                           <div className="absolute bottom-0 left-0 w-40 h-40 bg-purple-500/20 rounded-full -ml-10 -mb-10 blur-2xl"></div>
+                   <div className="glass-panel rounded-[2.5rem] p-1.5 relative overflow-hidden group transition-all hover:shadow-2xl hover:scale-[1.01]">
+                       <div className="bg-[#11131f] rounded-[2.2rem] p-6 text-white relative overflow-hidden shadow-2xl border border-white/5">
                            
-                           <div className="relative z-10 flex flex-col gap-6">
-                               {/* Balance Section */}
-                               <div className="flex justify-between items-start">
-                                   <div>
-                                       <div className="flex items-center gap-2 mb-1">
-                                            <p className="text-blue-200/80 text-[10px] font-bold uppercase tracking-[0.2em]">Tổng Số Dư</p>
-                                            <div className={`px-2 py-0.5 rounded-full text-[9px] font-bold border ${currentBalance >= 0 ? 'bg-blue-500/20 border-blue-500/30 text-blue-300' : 'bg-red-500/20 border-red-500/30 text-red-300'}`}>
-                                                {currentBalance >= 0 ? 'Tiết kiệm' : 'Thâm hụt'}
-                                            </div>
-                                       </div>
-                                       <h2 className="text-4xl font-black tracking-tighter text-white drop-shadow-lg">
-                                           {formatLargeNumber(currentBalance)}
-                                           <span className="text-xl text-blue-200/50 ml-1 font-medium">đ</span>
-                                       </h2>
-                                   </div>
-                                   <button onClick={onOpenStats} className="size-11 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center transition-all border border-white/10 shadow-lg group/btn">
-                                       <span className="material-symbols-outlined text-white group-hover/btn:scale-110 transition-transform">bar_chart</span>
-                                   </button>
-                               </div>
-                               
-                               {/* Visual Cash Flow Bar */}
-                               <div className="space-y-1.5">
-                                   <div className="flex justify-between items-center text-[10px] font-bold text-blue-200/60 uppercase tracking-wider">
-                                       <span>Dòng tiền (Chi / Thu)</span>
-                                       <span>{spendingPercentage.toFixed(0)}%</span>
-                                   </div>
-                                   <div className="w-full h-2.5 bg-gray-700/50 rounded-full overflow-hidden backdrop-blur-sm border border-white/5 relative">
-                                       <div className="absolute inset-0 bg-blue-500/20"></div>
-                                       <div className="h-full bg-gradient-to-r from-indigo-500 to-rose-500 rounded-r-full transition-all duration-1000 ease-out relative" style={{width: isMounted ? `${spendingPercentage}%` : '0%'}}>
-                                            <div className="absolute right-0 top-0 bottom-0 w-1 bg-white/50 shadow-[0_0_10px_rgba(255,255,255,0.8)]"></div>
-                                       </div>
-                                   </div>
-                               </div>
-
-                                {/* Income/Expense Cards */}
-                               <div className="grid grid-cols-2 gap-3 mt-1">
-                                    <div className="bg-cyan-900/20 rounded-[1.8rem] p-4 border border-cyan-500/10 backdrop-blur-sm relative overflow-hidden group/card hover:bg-cyan-900/30 transition-colors">
-                                        <div className="absolute -right-4 -bottom-4 text-cyan-500/5 group-hover/card:text-cyan-500/10 transition-colors">
-                                            <span className="material-symbols-outlined text-[80px]">arrow_downward</span>
-                                        </div>
-                                        <div className="relative z-10">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <div className="size-5 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                                                    <span className="material-symbols-outlined text-[12px] text-cyan-400">arrow_downward</span>
-                                                </div>
-                                                <span className="text-[10px] font-bold text-cyan-200/70 uppercase">Thu Nhập</span>
-                                            </div>
-                                            <p className="text-lg font-bold text-cyan-300 tracking-tight">{formatLargeNumber(totalIncome)}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-rose-900/20 rounded-[1.8rem] p-4 border border-rose-500/10 backdrop-blur-sm relative overflow-hidden group/card hover:bg-rose-900/30 transition-colors">
-                                        <div className="absolute -right-4 -bottom-4 text-rose-500/5 group-hover/card:text-rose-500/10 transition-colors">
-                                            <span className="material-symbols-outlined text-[80px]">arrow_upward</span>
-                                        </div>
-                                        <div className="relative z-10">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <div className="size-5 rounded-full bg-rose-500/20 flex items-center justify-center">
-                                                    <span className="material-symbols-outlined text-[12px] text-rose-400">arrow_upward</span>
-                                                </div>
-                                                <span className="text-[10px] font-bold text-rose-200/70 uppercase">Chi Tiêu</span>
-                                            </div>
-                                            <p className="text-lg font-bold text-rose-300 tracking-tight">{formatLargeNumber(totalExpense)}</p>
-                                        </div>
+                           {/* Top Row */}
+                           <div className="flex justify-between items-start mb-2">
+                               <div className="flex items-center gap-3">
+                                    <span className="text-gray-400 text-[11px] font-bold uppercase tracking-widest">Tổng số dư</span>
+                                    <div className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${currentBalance >= 0 ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+                                        {currentBalance >= 0 ? 'Tiết kiệm' : 'Thâm hụt'}
                                     </div>
                                </div>
+                               <button onClick={onOpenStats} className="size-10 rounded-full bg-[#202230] hover:bg-[#2a2c3d] flex items-center justify-center transition-all border border-white/5 group/btn">
+                                   <span className="material-symbols-outlined text-white text-[20px] group-hover/btn:scale-110 transition-transform">bar_chart</span>
+                               </button>
+                           </div>
+
+                           {/* Balance Amount */}
+                           <div className="mb-6">
+                               <h2 className="text-[40px] font-black tracking-tighter text-white leading-none">
+                                   {currentBalance.toLocaleString('vi-VN')}
+                                   <span className="text-xl text-gray-500 ml-1 font-bold align-top">đ</span>
+                               </h2>
+                           </div>
+                           
+                           {/* Progress Bar */}
+                           <div className="mb-6">
+                               <div className="flex justify-between items-center text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">
+                                   <span>Dòng tiền (Chi / Thu)</span>
+                                   <span>{spendingPercentage.toFixed(0)}%</span>
+                               </div>
+                               <div className="w-full h-2 bg-[#202230] rounded-full overflow-hidden relative">
+                                   <div className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full transition-all duration-1000 ease-out relative shadow-[0_0_10px_rgba(236,72,153,0.5)]" style={{width: isMounted ? `${Math.min(spendingPercentage, 100)}%` : '0%'}}>
+                                        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-3 bg-white/80 rounded-full shadow-md"></div>
+                                   </div>
+                               </div>
+                           </div>
+
+                            {/* Income/Expense Cards */}
+                           <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-[#1a1c29] rounded-[1.8rem] p-4 relative overflow-hidden border border-white/5 group/card transition-colors hover:bg-[#202230]">
+                                    <div className="absolute -right-2 -bottom-2 opacity-5 scale-125 group-hover/card:scale-110 transition-transform pointer-events-none">
+                                        <span className="material-symbols-outlined text-[60px]">arrow_downward</span>
+                                    </div>
+                                    <div className="relative z-10">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="size-6 rounded-full bg-[#1e293b] flex items-center justify-center border border-white/5">
+                                                <span className="material-symbols-outlined text-[14px] text-sky-400">arrow_downward</span>
+                                            </div>
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Thu nhập</span>
+                                        </div>
+                                        <p className="text-xl font-bold text-sky-400 tracking-tight">{formatLargeNumber(totalIncome)}</p>
+                                    </div>
+                                </div>
+
+                                <div className="bg-[#1a1c29] rounded-[1.8rem] p-4 relative overflow-hidden border border-white/5 group/card transition-colors hover:bg-[#202230]">
+                                    <div className="absolute -right-2 -bottom-2 opacity-5 scale-125 group-hover/card:scale-110 transition-transform pointer-events-none">
+                                        <span className="material-symbols-outlined text-[60px]">arrow_upward</span>
+                                    </div>
+                                    <div className="relative z-10">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="size-6 rounded-full bg-[#1e293b] flex items-center justify-center border border-white/5">
+                                                <span className="material-symbols-outlined text-[14px] text-rose-400">arrow_upward</span>
+                                            </div>
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Chi tiêu</span>
+                                        </div>
+                                        <p className="text-xl font-bold text-rose-400 tracking-tight">{formatLargeNumber(totalExpense)}</p>
+                                    </div>
+                                </div>
                            </div>
                        </div>
                    </div>
